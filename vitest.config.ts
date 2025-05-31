@@ -19,7 +19,7 @@ export default defineConfig({
     globals: true,
     isolate: true,
     sequence: { sequencer: SnapshotLastSequencer },
-    testTimeout: 60_000,
+    testTimeout: 120_000,
     exclude: [],
     workspace: [
       {

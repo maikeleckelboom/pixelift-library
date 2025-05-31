@@ -1,11 +1,7 @@
 import { streamToBlob } from '@/browser/utils/stream-to-blob.ts';
-import { serializeSVGElement } from '@/browser/utils/serialize-svg-element.ts';
+import { sanitizeSVGElement } from '@/browser/utils/sanitize-svg-element.ts';
 import type { BrowserInput } from '@/browser/types.ts';
-import {
-  type BrowserFormat,
-  getMimeTypeForFormat,
-  validateBrowserFormat
-} from '@/shared/formats.ts';
+import { type BrowserFormat, getMimeTypeForFormat } from '@/shared/formats.ts';
 import {
   isBufferSource,
   isImageBitmapSource,
@@ -47,7 +43,7 @@ export async function normalizeToBitmapSource(
   }
 
   if (isResponse(input)) {
-    return handleResponse(input, mimeType, formatHint, signal, onProgress);
+    return handleResponse(input, formatHint);
   }
 
   if (isSVGElement(input)) {
@@ -70,27 +66,15 @@ async function handleReadableStream(
   return streamToBlob(input, { type: mimeType, signal, onProgress });
 }
 
-async function handleResponse(
-  input: Response,
-  mimeType: string,
-  formatHint?: string,
-  signal?: AbortSignal,
-  onProgress?: (progress: number) => void
-): Promise<Blob> {
-  if (!formatHint) {
-    const contentType = input.headers.get('content-type') ?? '';
-    const [contentMimeType] = contentType.split(';') as [string, ...string[]];
-    if (!validateBrowserFormat(contentMimeType)) {
-      throw new TypeError(`Unsupported content type: ${contentType}`);
-    }
-  }
-
-  return input.body
-    ? streamToBlob(input.body, { type: mimeType, signal, onProgress })
-    : input.blob();
+async function handleResponse(response: Response, formatHint?: string): Promise<Blob> {
+  const mimeType =
+    formatHint ??
+    response.headers.get('Content-Type')?.split(';')[0]?.trim() ??
+    'application/octet-stream';
+  return new Blob([await response.arrayBuffer()], { type: mimeType });
 }
 
 function handleSVGElement(input: SVGElement): Blob {
-  const safeSVGString = serializeSVGElement(input);
+  const safeSVGString = sanitizeSVGElement(input);
   return new Blob([safeSVGString], { type: 'image/svg+xml' });
 }

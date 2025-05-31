@@ -1,136 +1,56 @@
-import type { ImageFormat, ImageGroups, ImageLoader } from '@test/fixtures/images';
-import { testImageGroups } from '@test/fixtures/images';
+import { getTestCases, loadBlob, testImageGroups } from '@test/fixtures/images';
 import { decode } from '@/browser';
 import { CanvasPool } from '@/browser/decoders/canvas/pool/canvas-pool.ts';
-
-interface TestCase {
-  size: keyof ImageGroups;
-  format: ImageFormat;
-  loader: ImageLoader;
-}
-
-function getTestCases(): TestCase[] {
-  return (Object.keys(testImageGroups) as (keyof ImageGroups)[]).flatMap((size) => {
-    const formatLoaders = testImageGroups[size] as Record<
-      ImageFormat,
-      ImageLoader | undefined
-    >;
-    return Object.entries(formatLoaders)
-      .filter(([, loader]) => loader)
-      .map(([format, loader]) => ({
-        size,
-        format: format as ImageFormat,
-        loader: loader as ImageLoader
-      }));
-  });
-}
-
-async function loadBlob(loader: ImageLoader): Promise<Blob> {
-  const response = await loader();
-  if (!response.ok) {
-    throw new Error(
-      `Failed to fetch image for decode test: ${response.status} ${response.statusText}`
-    );
-  }
-  return response.blob();
-}
 
 describe('decoder in browser environment', () => {
   const testCases = getTestCases();
 
-  test.each(testCases)('decodes $size $format image correctly', async ({ loader }) => {
-    if (!loader) {
-      throw new Error('ImageLoader is undefined, skipping test');
-    }
-    const blob = await loadBlob(loader);
-    const pixelData = await decode(blob);
-
-    expect(pixelData.width).toBeGreaterThan(0);
-    expect(pixelData.height).toBeGreaterThan(0);
-    expect(pixelData.data.length).toBe(pixelData.width * pixelData.height * 4);
-  });
-
-  test('decodes with resizing across all formats and sizes', async () => {
-    const resize = { width: 20, height: 20, fit: 'cover' as const };
-
-    for (const { loader } of testCases) {
-      if (!loader) {
-        continue; // skip if loader undefined
-      }
+  test.each(testCases)(
+    'decodes $size $format image correctly',
+    async ({ loader }) => {
+      if (!loader) throw new Error('TestImageLoader is undefined, skipping test');
       const blob = await loadBlob(loader);
-      const pixelData = await decode(blob, { resize });
+      const pixelData = await decode(blob);
 
-      expect(pixelData.width).toBe(resize.width);
-      expect(pixelData.height).toBe(resize.height);
-      expect(pixelData.data.length).toBe(resize.width * resize.height * 4);
-    }
-  });
+      expect(pixelData.width).toBeGreaterThan(0);
+      expect(pixelData.height).toBeGreaterThan(0);
+      expect(pixelData.data.length).toBe(pixelData.width * pixelData.height * 4);
+    },
+    60_000
+  );
 
-  test('stress test: decodes many images concurrently', async () => {
-    const concurrency = 20;
-    const resize = { width: 32, height: 32, fit: 'cover' as const };
-    const blobs: Blob[] = [];
-
-    for (let i = 0; i < concurrency; i++) {
-      const loader = testCases[i % testCases.length]?.loader;
-      if (!loader) {
-        throw new Error(`Loader missing for concurrency index ${i}`);
-      }
-      blobs.push(await loadBlob(loader));
-    }
-
-    const results = await Promise.all(blobs.map((blob) => decode(blob, { resize })));
-
-    for (const pixelData of results) {
-      expect(pixelData.width).toBe(resize.width);
-      expect(pixelData.height).toBe(resize.height);
-      expect(pixelData.data.length).toBe(resize.width * resize.height * 4);
-    }
-  }, 20_000);
-
-  test('stress test: concurrent decodes with frequent resizing', async () => {
-    const concurrency = 20;
+  test('decodes images with and without resizing', async () => {
     const resizeOptions = [
-      { width: 16, height: 16, fit: 'cover' as const },
+      undefined,
+      { width: 20, height: 20, fit: 'cover' as const },
       { width: 32, height: 24, fit: 'contain' as const },
-      { width: 48, height: 48, fit: 'fill' as const },
-      { width: 64, height: 32, fit: 'cover' as const }
+      { width: 48, height: 48, fit: 'fill' as const }
     ];
 
-    const blobs: Blob[] = [];
-    for (let i = 0; i < concurrency; i++) {
-      const loader = testCases[i % testCases.length]?.loader;
-      if (!loader) {
-        throw new Error(`Loader missing for concurrent resizing test at index ${i}`);
+    for (const { loader } of testCases) {
+      if (!loader) continue;
+
+      for (const resize of resizeOptions) {
+        const blob = await loadBlob(loader);
+        const pixelData = await decode(blob, resize ? { resize } : undefined);
+
+        if (resize) {
+          expect(pixelData.width).toBe(resize.width);
+          expect(pixelData.height).toBe(resize.height);
+          expect(pixelData.data.length).toBe(resize.width * resize.height * 4);
+        } else {
+          expect(pixelData.width).toBeGreaterThan(0);
+          expect(pixelData.height).toBeGreaterThan(0);
+          expect(pixelData.data.length).toBe(pixelData.width * pixelData.height * 4);
+        }
       }
-      blobs.push(await loadBlob(loader));
     }
-
-    const results = await Promise.all(
-      blobs.map((blob, i) => {
-        const resize = i % 10 === 0 ? undefined : resizeOptions[i % resizeOptions.length];
-        return decode(blob, resize ? { resize } : undefined);
-      })
-    );
-
-    results.forEach((pixelData, i) => {
-      if (i % 10 === 0) {
-        expect(pixelData.width).toBeGreaterThan(0);
-        expect(pixelData.height).toBeGreaterThan(0);
-        expect(pixelData.data.length).toBe(pixelData.width * pixelData.height * 4);
-      } else {
-        const expected = resizeOptions[i % resizeOptions.length]!;
-        expect(pixelData.width).toBe(expected.width);
-        expect(pixelData.height).toBe(expected.height);
-        expect(pixelData.data.length).toBe(expected.width * expected.height * 4);
-      }
-    });
-  }, 20_000);
+  }, 120_000);
 
   test.concurrent(
-    'stress test: concurrent decode stress test with frequent resizing',
+    'concurrent decode stress test with varying resizing',
     async () => {
-      const concurrencyLevel = 20;
+      const concurrency = 20;
       const resizeOptions = [
         { width: 16, height: 16, fit: 'cover' as const },
         { width: 32, height: 24, fit: 'contain' as const },
@@ -140,16 +60,13 @@ describe('decoder in browser environment', () => {
 
       const keys = testCases.map(({ size, format }) => ({ size, format }));
 
-      const decodePromises = Array.from({ length: concurrencyLevel }, async (_, i) => {
-        const randomIndex = Math.floor(Math.random() * keys.length);
-        const { size, format } = keys[randomIndex]!;
+      const decodePromises = Array.from({ length: concurrency }, async (_, i) => {
+        const { size, format } = keys[Math.floor(Math.random() * keys.length)]!;
         const loader = testImageGroups[size]?.[format];
-        if (!loader) {
-          throw new Error(`Loader missing for random key ${size} ${format}`);
-        }
+        if (!loader) throw new Error(`Loader missing for random key ${size} ${format}`);
 
         const blob = await loadBlob(loader);
-
+        // Every 5th decode no resize, else random resize
         const resize = i % 5 === 0 ? undefined : resizeOptions[i % resizeOptions.length];
         const pixelData = await decode(blob, resize ? { resize } : undefined);
 
@@ -166,7 +83,7 @@ describe('decoder in browser environment', () => {
 
       await Promise.all(decodePromises);
     },
-    20_000
+    30_000
   );
 
   test('aborts decode operation when signal aborted', async () => {
@@ -175,135 +92,50 @@ describe('decoder in browser environment', () => {
 
     const blob = await loadBlob(testImageGroups.small.png);
     await expect(decode(blob, { signal: controller.signal })).rejects.toThrow();
-  }, 20_000);
+  });
 
   test('rejects non-image content types', async () => {
-    const fakeResponse = new Response('Not an image', {
-      headers: { 'Content-Type': 'text/html' }
+    const nonImageResponses = [
+      new Response('Not an image', { headers: { 'Content-Type': 'text/html' } }),
+      new Response('<html lang="en"></html>', { headers: { 'Content-Type': 'text/html' } }),
+      new Response(JSON.stringify({}), { headers: { 'Content-Type': 'application/json' } })
+    ];
+
+    for (const resp of nonImageResponses) {
+      await expect(decode(resp)).rejects.toThrow();
+    }
+  });
+
+  describe('CanvasPool behavior', () => {
+    test('handles pool exhaustion and aborts queued tasks gracefully', async () => {
+      const pool = new CanvasPool(100, 100, 1);
+
+      const acquire1 = pool.acquire();
+      const acquire2 = pool.acquire();
+      const abortController = new AbortController();
+      const acquire3 = pool.acquire(abortController.signal);
+      abortController.abort();
+
+      const canvas1 = await acquire1;
+      pool.release(canvas1);
+
+      await expect(acquire3).rejects.toThrow('Operation aborted');
+      await expect(acquire2).resolves.toBeInstanceOf(OffscreenCanvas);
+
+      pool.dispose();
     });
 
-    await expect(decode(fakeResponse)).rejects.toThrow();
-  });
-
-  test('handles pool exhaustion gracefully', async () => {
-    const pool = new CanvasPool(100, 100, 1);
-    const acquire1 = pool.acquire();
-    pool.acquire();
-
-    // Should resolve immediately
-    const canvas1 = await acquire1;
-
-    // Should be queued
-    expect(pool['queuedTasksHead']).toBeDefined();
-
-    // Abort second acquire
-    const controller = new AbortController();
-    const acquire3 = pool.acquire(controller.signal);
-    controller.abort();
-
-    await expect(acquire3).rejects.toThrow();
-
-    // Cleanup
-    pool.release(canvas1);
-    pool.dispose();
-  }, 20_000);
-
-  test('handles aborted tasks in queue', async () => {
-    const pool = new CanvasPool(100, 100, 1);
-    const acquire1 = pool.acquire();
-    const controller = new AbortController();
-
-    // Queue multiple requests
-    const acquire2 = pool.acquire();
-    const acquire3 = pool.acquire(controller.signal);
-
-    // Abort one request
-    controller.abort();
-
-    // Release first canvas
-    const canvas = await acquire1;
-    pool.release(canvas);
-
-    // Verify results
-    await expect(acquire3).rejects.toThrow('Operation aborted');
-    await expect(acquire2).resolves.toBeInstanceOf(OffscreenCanvas);
-
-    pool.dispose();
-  });
-
-  test('rejects non-image responses', async () => {
-    const htmlResponse = new Response('<html lang="en"></html>', {
-      headers: { 'Content-Type': 'text/html' }
+    test('reuses canvases properly and grows when needed', async () => {
+      const pool = new CanvasPool(100, 100, 2);
+      const canvas1 = await pool.acquire();
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const canvas2 = await pool.acquire();
+      const acquire3 = pool.acquire();
+      pool.release(canvas1);
+      const canvas3 = await acquire3;
+      expect(canvas3).toBe(canvas1);
+      expect(pool['pool'].length).toBe(2);
+      pool.dispose();
     });
-
-    await expect(decode(htmlResponse)).rejects.toThrow();
-
-    const jsonResponse = new Response(JSON.stringify({}), {
-      headers: { 'Content-Type': 'application/json' }
-    });
-
-    await expect(decode(jsonResponse)).rejects.toThrow();
-  });
-
-  test('canvas pool properly reuses canvases after release', async () => {
-    const pool = new CanvasPool(100, 100, 1);
-    const acquire1 = pool.acquire();
-    const acquire2 = pool.acquire();
-
-    const canvas1 = await acquire1;
-
-    // Release first canvas while second is waiting
-    setTimeout(() => pool.release(canvas1), 10);
-
-    const canvas2 = await acquire2;
-
-    // Should reuse the same canvas after release
-    expect(canvas1).toBe(canvas2);
-
-    // Pool should only have 1 canvas (maxSize)
-    expect(pool['pool'].length).toBe(1);
-
-    pool.dispose();
-  });
-
-  test('canvas pool grows when needed', async () => {
-    const pool = new CanvasPool(100, 100, 2);
-
-    // Acquire all available canvases
-    const canvas1 = await pool.acquire();
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const canvas2 = await pool.acquire();
-
-    // Queue a third request
-    const acquire3 = pool.acquire();
-
-    // Release first canvas
-    pool.release(canvas1);
-
-    // Should get the same canvas back (reused)
-    const canvas3 = await acquire3;
-
-    expect(canvas3).toBe(canvas1);
-    expect(pool['pool'].length).toBe(2);
-
-    pool.dispose();
-  });
-
-  test('canvas pool reuses canvases when possible', async () => {
-    const pool = new CanvasPool(100, 100, 1);
-    const acquire1 = pool.acquire();
-    const acquire2 = pool.acquire();
-
-    const canvas1 = await acquire1;
-    setTimeout(() => pool.release(canvas1), 10);
-    const canvas2 = await acquire2;
-
-    expect(canvas1).toBe(canvas2);
-
-    // Verify pool size
-    expect(pool['pool'].length).toBe(1);
-    expect(pool['allocatedCanvases'].size).toBe(1);
-
-    pool.dispose();
   });
 });

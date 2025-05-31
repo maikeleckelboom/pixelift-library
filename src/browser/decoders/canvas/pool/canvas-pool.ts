@@ -131,6 +131,8 @@ export class CanvasPool implements Pool {
   }
 
   private removeNode(target: TaskNode): void {
+    target.cleanup(); // ✅ Prevent listener leak
+
     if (!this.queuedTasksHead) return;
 
     if (this.queuedTasksHead === target) {

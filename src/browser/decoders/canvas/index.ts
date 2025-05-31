@@ -3,10 +3,7 @@ import { normalizeToBitmapSource } from '@/browser/utils/normalize-to-bitmap-sou
 import { calculateResizeRect } from '@/browser/utils/calculate-resize-rect.ts';
 import type { PixelData } from '@/types';
 import type { BrowserInput, BrowserOptions } from '@/browser/types';
-import {
-  CANVAS_IMAGE_SMOOTHING,
-  CANVAS_RENDERING_CONTEXT_2D_SETTINGS
-} from '@/browser/decoders/canvas/defaults';
+import { CANVAS_DECODE_CONFIG } from '@/browser/decoders/canvas/defaults';
 import { BrowserDecodeError } from '@/browser/decoders/canvas/errors.ts';
 import { validateResizeOptions } from '@/shared/validate.ts';
 
@@ -42,9 +39,19 @@ export async function decode(
     signal: opts.signal
   });
 
-  const imageBitmap = await createImageBitmap(normalizedSource);
+  const imageBitmap = await createImageBitmap(
+    normalizedSource,
+    CANVAS_DECODE_CONFIG.bitmap
+  );
+
   const targetWidth = resize?.width ?? imageBitmap.width;
   const targetHeight = resize?.height ?? imageBitmap.height;
+
+  if (targetWidth <= 0 || targetHeight <= 0) {
+    throw new BrowserDecodeError.ModuleError('INVALID_TARGET_DIMENSIONS', {
+      context: { targetWidth, targetHeight }
+    });
+  }
 
   const canvas = await pool.acquire(opts.signal);
 
@@ -52,21 +59,16 @@ export async function decode(
     canvas.width = targetWidth;
     canvas.height = targetHeight;
 
-    const context = canvas.getContext('2d', CANVAS_RENDERING_CONTEXT_2D_SETTINGS);
+    const context = canvas.getContext('2d', CANVAS_DECODE_CONFIG.context2d);
     if (!context) {
       throw new BrowserDecodeError.ModuleError('CONTEXT_UNAVAILABLE', {
         context: { canvas }
       });
     }
 
-    if (
-      resize &&
-      (targetWidth !== imageBitmap.width || targetHeight !== imageBitmap.height)
-    ) {
-      context.imageSmoothingEnabled = CANVAS_IMAGE_SMOOTHING.imageSmoothingEnabled;
-      context.imageSmoothingQuality =
-        opts.quality ?? CANVAS_IMAGE_SMOOTHING.imageSmoothingQuality;
-    }
+    context.imageSmoothingEnabled = CANVAS_DECODE_CONFIG.smoothing.imageSmoothingEnabled;
+    context.imageSmoothingQuality =
+      opts.quality ?? CANVAS_DECODE_CONFIG.smoothing.imageSmoothingQuality;
 
     const { sx, sy, sw, sh, dx, dy, dw, dh } = calculateResizeRect(
       imageBitmap.width,
@@ -88,7 +90,7 @@ export async function decode(
       height: targetHeight
     };
   } finally {
-    imageBitmap.close();
+    if (imageBitmap) imageBitmap.close();
     pool.release(canvas);
   }
 }
