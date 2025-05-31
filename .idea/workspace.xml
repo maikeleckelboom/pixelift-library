@@ -7,7 +7,9 @@
     <list default="true" id="2a78ba49-76cf-4b9f-8241-3a8372f62658" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/browser/decoders/canvas/pool/canvas-pool.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/browser/decoders/canvas/pool/canvas-pool.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vitest.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/vitest.config.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/browser/decoders/canvas/pool/errors.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/browser/decoders/canvas/pool/errors.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/workspace/browser/decode.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/test/workspace/browser/decode.test.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/workspace/shared/calculate-resize-rect.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/test/workspace/shared/calculate-resize-rect.test.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

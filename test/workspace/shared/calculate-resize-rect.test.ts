@@ -238,4 +238,49 @@ describe('calculateResizeRect', () => {
       expect(result).toEqual(createRect(0, 0, 4000, 3000, 240, 0, 1440, 1080));
     });
   });
+
+  describe('optional target dimensions', () => {
+    it('should derive height from width and source aspect ratio if height is undefined', () => {
+      // Source: 1000x500 (2:1 aspect), Target width: 400
+      // Expected target height: 400 / 2 = 200
+      const result = calculateResizeRect(1000, 500, { width: 400 }); // height undefined
+      // Assuming 'cover' fit, and target is 400x200
+      // Source (1000x500) will be scaled to fit 400x200.
+      // sx:0, sy:0, sw:1000, sh:500, dx:0, dy:0, dw:400, dh:200
+      expect(result).toEqual(createRect(0, 0, 1000, 500, 0, 0, 400, 200));
+    });
+
+    it('should derive width from height and source aspect ratio if width is undefined', () => {
+      // Source: 1000x500 (2:1 aspect), Target height: 100
+      // Expected target width: 100 * 2 = 200
+      const result = calculateResizeRect(1000, 500, { height: 100 }); // width undefined
+      // Assuming 'cover' fit, and target is 200x100
+      // sx:0, sy:0, sw:1000, sh:500, dx:0, dy:0, dw:200, dh:100
+      expect(result).toEqual(createRect(0, 0, 1000, 500, 0, 0, 200, 100));
+    });
+
+    it('should use source dimensions if both target width and height are undefined', () => {
+      // Source: 1000x500
+      const result = calculateResizeRect(1000, 500, {}); // width and height undefined in resize options
+      // No change expected, target becomes source dimensions
+      // sx:0, sy:0, sw:1000, sh:500, dx:0, dy:0, dw:1000, dh:500
+      expect(result).toEqual(createRect(0, 0, 1000, 500, 0, 0, 1000, 500));
+    });
+
+    it('should derive height and apply contain fit correctly when only width is provided', () => {
+      // Source: 1000x800 (1.25 aspect), Target width: 500, fit: 'contain'
+      // Expected target height: 500 / 1.25 = 400. Target box is 500x400.
+      // Image should fit perfectly.
+      const result = calculateResizeRect(1000, 800, { width: 500, fit: 'contain' });
+      expect(result).toEqual(createRect(0, 0, 1000, 800, 0, 0, 500, 400));
+    });
+
+    it('should derive width and apply cover fit correctly when only height is provided', () => {
+      // Source: 1000x500 (2:1 aspect), Target height: 400, fit: 'cover'
+      // Derived target width: 400 * 2 = 800. Target box is 800x400.
+      // Image should fit perfectly.
+      const result = calculateResizeRect(1000, 500, { height: 400, fit: 'cover' });
+      expect(result).toEqual(createRect(0, 0, 1000, 500, 0, 0, 800, 400));
+    });
+  });
 });

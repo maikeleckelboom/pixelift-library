@@ -1,4 +1,4 @@
-import type { ImageFormat, ImageLoader, ImageGroups } from '@test/fixtures/images';
+import type { ImageFormat, ImageGroups, ImageLoader } from '@test/fixtures/images';
 import { testImageGroups } from '@test/fixtures/images';
 import { decode } from '@/browser';
 import { CanvasPool } from '@/browser/decoders/canvas/pool/canvas-pool.ts';
@@ -206,7 +206,7 @@ describe('decoder in browser environment', () => {
     // Cleanup
     pool.release(canvas1);
     pool.dispose();
-  });
+  }, 20_000);
 
   test('handles aborted tasks in queue', async () => {
     const pool = new CanvasPool(100, 100, 1);
@@ -243,5 +243,67 @@ describe('decoder in browser environment', () => {
     });
 
     await expect(decode(jsonResponse)).rejects.toThrow();
+  });
+
+  test('canvas pool properly reuses canvases after release', async () => {
+    const pool = new CanvasPool(100, 100, 1);
+    const acquire1 = pool.acquire();
+    const acquire2 = pool.acquire();
+
+    const canvas1 = await acquire1;
+
+    // Release first canvas while second is waiting
+    setTimeout(() => pool.release(canvas1), 10);
+
+    const canvas2 = await acquire2;
+
+    // Should reuse the same canvas after release
+    expect(canvas1).toBe(canvas2);
+
+    // Pool should only have 1 canvas (maxSize)
+    expect(pool['pool'].length).toBe(1);
+
+    pool.dispose();
+  });
+
+  test('canvas pool grows when needed', async () => {
+    const pool = new CanvasPool(100, 100, 2);
+
+    // Acquire all available canvases
+    const canvas1 = await pool.acquire();
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const canvas2 = await pool.acquire();
+
+    // Queue a third request
+    const acquire3 = pool.acquire();
+
+    // Release first canvas
+    pool.release(canvas1);
+
+    // Should get the same canvas back (reused)
+    const canvas3 = await acquire3;
+
+    expect(canvas3).toBe(canvas1);
+    expect(pool['pool'].length).toBe(2);
+
+    pool.dispose();
+  });
+
+  test('canvas pool reuses canvases when possible', async () => {
+    const pool = new CanvasPool(100, 100, 1);
+    const acquire1 = pool.acquire();
+    const acquire2 = pool.acquire();
+
+    const canvas1 = await acquire1;
+    setTimeout(() => pool.release(canvas1), 10);
+    const canvas2 = await acquire2;
+
+    expect(canvas1).toBe(canvas2);
+
+    // Verify pool size
+    expect(pool['pool'].length).toBe(1);
+    expect(pool['allocatedCanvases'].size).toBe(1);
+
+    pool.dispose();
   });
 });

@@ -19,22 +19,28 @@ export class CanvasPool implements Pool {
     private readonly height: number,
     private readonly maxSize: number = 4
   ) {
-    if (maxSize <= 0) throw new BrowserPoolError.ModuleError('INVALID_MAX_SIZE');
-    if (width <= 0 || height <= 0)
+    if (maxSize <= 0) {
+      throw new BrowserPoolError.ModuleError('INVALID_MAX_SIZE');
+    }
+    if (width <= 0 || height <= 0) {
       throw new BrowserPoolError.ModuleError('INVALID_DIMENSIONS');
+    }
   }
 
   acquire(signal?: AbortSignal): Promise<OffscreenCanvas> {
+    // If the caller's signal is already aborted, reject immediately.
     if (signal?.aborted) {
       return Promise.reject(BrowserPoolErrors.OPERATION_ABORTED);
     }
 
+    // Try to find any existing, free canvas in the pool.
     const available = this.pool.find((canvas) => !this.allocatedCanvases.has(canvas));
     if (available) {
       this.allocatedCanvases.add(available);
       return Promise.resolve(available);
     }
 
+    // If we have not yet reached maxSize, create a brand-new canvas.
     if (this.pool.length < this.maxSize) {
       const canvas = new OffscreenCanvas(this.width, this.height);
       this.pool.push(canvas);
@@ -42,6 +48,7 @@ export class CanvasPool implements Pool {
       return Promise.resolve(canvas);
     }
 
+    // Otherwise, the pool is "full" → enqueue this request.
     return createAbortablePromise(
       new Promise<OffscreenCanvas>((resolve, reject) => {
         const onAbort = () => {
@@ -63,12 +70,15 @@ export class CanvasPool implements Pool {
   }
 
   release(canvas: OffscreenCanvas): void {
+    // Verify that this canvas was actually checked out.
     if (!this.allocatedCanvases.has(canvas)) {
       throw new BrowserPoolError.ModuleError('RELEASE_UNACQUIRED');
     }
 
+    // Mark it as free first.
     this.allocatedCanvases.delete(canvas);
 
+    // If there is a queued task waiting, give them this canvas.
     while (this.queuedTasksHead) {
       const node = this.queuedTasksHead;
       this.dequeueHead();
@@ -79,11 +89,9 @@ export class CanvasPool implements Pool {
         continue;
       }
 
-      // Create a NEW canvas for the queued task
-      const newCanvas = new OffscreenCanvas(this.width, this.height);
-      this.pool.push(newCanvas);
-      this.allocatedCanvases.add(newCanvas);
-      node.task.resolve(newCanvas);
+      // Otherwise, re-use the just-released canvas.
+      this.allocatedCanvases.add(canvas);
+      node.task.resolve(canvas);
       return;
     }
   }
@@ -116,9 +124,7 @@ export class CanvasPool implements Pool {
 
   private dequeueHead(): void {
     if (!this.queuedTasksHead) return;
-
     this.queuedTasksHead = this.queuedTasksHead.next;
-
     if (!this.queuedTasksHead) {
       this.queuedTasksTail = null;
     }
@@ -127,7 +133,6 @@ export class CanvasPool implements Pool {
   private removeNode(target: TaskNode): void {
     if (!this.queuedTasksHead) return;
 
-    // Special case: head node
     if (this.queuedTasksHead === target) {
       this.dequeueHead();
       return;

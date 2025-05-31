@@ -5,6 +5,7 @@ export const BrowserPoolErrors = {
   INVALID_DIMENSIONS: 'Canvas width and height must be positive numbers.',
   RELEASE_UNACQUIRED: 'Cannot release a canvas that is not acquired.',
   POOL_DISPOSED: 'Canvas pool disposed before task could run.',
+  POOL_EXHAUSTED: 'Canvas pool exhausted despite size limits',
   OPERATION_ABORTED: new DOMException('Operation aborted', 'AbortError')
 } as const;
 
