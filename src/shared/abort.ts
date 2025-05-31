@@ -26,3 +26,35 @@ export function rethrowIfAbortError(error: unknown, signal?: AbortSignal): void 
   }
   throw error;
 }
+
+/**
+ * Creates an abortable promise that resolves or rejects based on the provided promise and abort signal.
+ * If the signal is aborted, the promise will be rejected with an AbortError.
+ *
+ * @param {Promise<T>} promise<T> - The original promise to be made abortable.
+ * @param {AbortSignal} [signal] - An optional AbortSignal to monitor for abortion.
+ * @return {Promise<T>} A new promise that resolves or rejects based on the original promise and the abort signal.
+ */
+export function createAbortablePromise<T>(
+  promise: Promise<T>,
+  signal?: AbortSignal
+): Promise<T> {
+  if (!signal) return promise;
+
+  return new Promise((resolve, reject) => {
+    const onAbort = () => {
+      reject(new DOMException('Operation aborted', 'AbortError'));
+    };
+
+    if (signal.aborted) return onAbort();
+
+    signal.addEventListener('abort', onAbort, { once: true });
+
+    promise
+      .then(resolve)
+      .catch(reject)
+      .finally(() => {
+        signal.removeEventListener('abort', onAbort);
+      });
+  });
+}

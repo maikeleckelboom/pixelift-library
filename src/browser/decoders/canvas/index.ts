@@ -16,6 +16,18 @@ const canvasPool = new CanvasPool(
   Math.max(1, navigator.hardwareConcurrency - 1)
 );
 
+/**
+ * Decodes image data into raw pixel data
+ *
+ * @param input - Image source (Buffer, Blob, Stream, etc.)
+ * @param options - Decoding/resize options
+ * @returns Promise resolving to PixelData
+ *
+ * @example
+ * const pixels = await decode(fs.readFileSync('image.jpg'), {
+ *   resize: { width: 300, height: 200 }
+ * });
+ */
 export async function decode(
   input: BrowserInput,
   options: BrowserOptions = {}

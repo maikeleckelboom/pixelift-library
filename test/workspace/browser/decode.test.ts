@@ -2,6 +2,7 @@ import { describe, test, expect } from 'vitest';
 import type { ImageFormat, ImageLoader, ImageGroups } from '@test/fixtures/images';
 import { testImageGroups } from '@test/fixtures/images';
 import { decode } from '@/browser';
+import { CanvasPool } from '@/browser/decoders/canvas/pool/canvas-pool.ts';
 
 interface TestCase {
   size: keyof ImageGroups;
@@ -168,4 +169,43 @@ describe('decoder in browser environment', () => {
     },
     20_000
   );
+
+  test('aborts decode operation when signal aborted', async () => {
+    const controller = new AbortController();
+    controller.abort();
+
+    const blob = await loadBlob(testImageGroups.small.png);
+    await expect(decode(blob, { signal: controller.signal })).rejects.toThrow();
+  }, 20_000);
+
+  test('rejects non-image content types', async () => {
+    const fakeResponse = new Response('Not an image', {
+      headers: { 'Content-Type': 'text/html' }
+    });
+
+    await expect(decode(fakeResponse)).rejects.toThrow();
+  });
+
+  test('handles pool exhaustion gracefully', async () => {
+    const pool = new CanvasPool(100, 100, 1);
+    const acquire1 = pool.acquire();
+    pool.acquire();
+
+    // Should resolve immediately
+    const canvas1 = await acquire1;
+
+    // Should be queued
+    expect(pool['queuedTasksHead']).toBeDefined();
+
+    // Abort second acquire
+    const controller = new AbortController();
+    const acquire3 = pool.acquire(controller.signal);
+    controller.abort();
+
+    await expect(acquire3).rejects.toThrow();
+
+    // Cleanup
+    pool.release(canvas1);
+    pool.dispose();
+  });
 });

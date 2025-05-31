@@ -89,7 +89,7 @@ describe('calculateResizeRect', () => {
 
     it('should resize when source is larger than target', () => {
       // Source: 1000x500, Target: 400x400
-      // Should behave like contain when larger
+      // Should behave like content when larger
       const result = calculateResizeRect(1000, 500, {
         width: 400,
         height: 400,

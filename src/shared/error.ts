@@ -1,5 +1,10 @@
 export type PixeliftErrorKind = 'Decode' | 'Validation' | 'IO' | 'Internal' | (string & {});
 
+export type ErrorContext<T extends string> = {
+  [K in T]?: unknown;
+} & {
+  cause?: unknown;
+};
 /**
  * Base Pixelift error class.
  *
@@ -12,7 +17,10 @@ export class PixeliftError<K extends PixeliftErrorKind = string> extends Error {
   constructor(
     kind: K,
     message: string,
-    options: { cause?: unknown; context?: Record<string, unknown> } = {}
+    options: {
+      cause?: unknown;
+      context?: ErrorContext<K>;
+    } = {}
   ) {
     super(message, options);
     this.kind = kind;

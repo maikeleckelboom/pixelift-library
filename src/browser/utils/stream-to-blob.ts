@@ -9,9 +9,8 @@ export async function streamToBlob(
   options: StreamToBlobOptions
 ): Promise<Blob> {
   const { type, onProgress, signal } = options;
-
   const reader = stream.getReader();
-  const chunks: Uint8Array[] = [];
+  const blobParts: BlobPart[] = [];
   let totalLength = 0;
 
   try {
@@ -24,14 +23,19 @@ export async function streamToBlob(
       if (done) break;
 
       if (value.byteLength > 0) {
-        chunks.push(value);
+        blobParts.push(value);
         totalLength += value.byteLength;
         onProgress?.(totalLength);
+
+        // Allow event loop processing every 50 chunks
+        if (blobParts.length % 50 === 0) {
+          await new Promise((resolve) => setTimeout(resolve, 0));
+        }
       }
     }
   } finally {
     reader.releaseLock();
   }
 
-  return new Blob(chunks, { type });
+  return new Blob(blobParts, { type });
 }

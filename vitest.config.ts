@@ -10,8 +10,7 @@ const commonOptions = {
       '@': path.resolve(__dirname, 'src'),
       '@test': path.resolve(__dirname, 'test')
     }
-  },
-  testTimeout: 30_000
+  }
 } as const;
 
 export default defineConfig({
@@ -31,7 +30,8 @@ export default defineConfig({
             'test/workspace/server/**/*.test.ts',
             'test/workspace/shared/**/*.test.ts'
           ],
-          benchmark: { include: ['test/workspace/server/**/*.bench.ts'] }
+          benchmark: { include: ['test/workspace/server/**/*.bench.ts'] },
+          testTimeout: 30_000
           // exclude: ['**/*slow*.test.ts'],
         }
       },
@@ -55,7 +55,9 @@ export default defineConfig({
               // { browser: 'firefox' },
               // { browser: 'webkit' }
             ]
-          }
+          },
+          testTimeout: 30_000
+
           // exclude: ['**/*slow*.test.ts'],
         }
       }

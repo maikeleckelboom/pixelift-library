@@ -9,6 +9,7 @@ export function isWorker(): boolean {
 export function isNode(): boolean {
   return (
     typeof process !== 'undefined' &&
-    process.versions?.node != null
+    process.versions?.node != null &&
+    !process.versions?.electron
   );
 }

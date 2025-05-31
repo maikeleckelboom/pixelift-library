@@ -1,10 +1,18 @@
 import { BrowserPoolError, BrowserPoolErrors } from '@/browser/decoders/canvas/pool/errors';
 import type { Pool, Task } from '@/browser/decoders/canvas/pool/types';
 
+interface TaskNode {
+  task: Task;
+  prev: TaskNode | null;
+  next: TaskNode | null;
+  cleanup: () => void;
+}
+
 export class CanvasPool implements Pool {
   private pool: OffscreenCanvas[] = [];
   private allocatedCanvases = new Set<OffscreenCanvas>();
-  private queuedTasks: Task[] = [];
+  private queuedTasksHead: TaskNode | null = null;
+  private queuedTasksTail: TaskNode | null = null;
 
   constructor(
     private readonly width: number,
@@ -35,31 +43,20 @@ export class CanvasPool implements Pool {
     }
 
     return new Promise((resolve, reject) => {
-      const task: Task = { resolve, reject, signal };
-
       const onAbort = () => {
-        const idx = this.queuedTasks.indexOf(task);
-        if (idx !== -1) {
-          this.queuedTasks.splice(idx, 1);
-          reject(BrowserPoolErrors.OPERATION_ABORTED);
-        }
+        this.removeNode(node);
+        reject(BrowserPoolErrors.OPERATION_ABORTED);
       };
 
+      const node: TaskNode = {
+        task: { resolve, reject, signal },
+        prev: null,
+        next: null,
+        cleanup: () => signal?.removeEventListener('abort', onAbort)
+      };
+
+      this.appendNode(node);
       signal?.addEventListener('abort', onAbort, { once: true });
-
-      this.queuedTasks.push(task);
-
-      const cleanup = () => signal?.removeEventListener('abort', onAbort);
-
-      task.resolve = (canvas) => {
-        cleanup();
-        resolve(canvas);
-      };
-
-      task.reject = (error) => {
-        cleanup();
-        reject(error);
-      };
     });
   }
 
@@ -70,16 +67,20 @@ export class CanvasPool implements Pool {
 
     this.allocatedCanvases.delete(canvas);
 
-    while (this.queuedTasks.length) {
-      const task = this.queuedTasks.shift()!;
-      if (task.signal?.aborted) {
-        task.reject(BrowserPoolErrors.OPERATION_ABORTED);
-        continue;
+    let currentNode = this.queuedTasksHead;
+    while (currentNode) {
+      const nextNode = currentNode.next;
+      this.removeNode(currentNode);
+      currentNode.cleanup();
+
+      if (!currentNode.task.signal?.aborted) {
+        this.allocatedCanvases.add(canvas);
+        currentNode.task.resolve(canvas);
+        return;
       }
 
-      this.allocatedCanvases.add(canvas);
-      task.resolve(canvas);
-      return;
+      currentNode.task.reject(BrowserPoolErrors.OPERATION_ABORTED);
+      currentNode = nextNode;
     }
   }
 
@@ -87,9 +88,40 @@ export class CanvasPool implements Pool {
     this.pool = [];
     this.allocatedCanvases.clear();
 
-    this.queuedTasks.forEach((task) =>
-      task.reject(new BrowserPoolError.ModuleError('POOL_DISPOSED'))
-    );
-    this.queuedTasks = [];
+    let currentNode = this.queuedTasksHead;
+    this.queuedTasksHead = null;
+    this.queuedTasksTail = null;
+
+    while (currentNode) {
+      const nextNode = currentNode.next;
+      currentNode.cleanup();
+      currentNode.task.reject(new BrowserPoolError.ModuleError('POOL_DISPOSED'));
+      currentNode = nextNode;
+    }
+  }
+
+  private appendNode(node: TaskNode): void {
+    if (this.queuedTasksTail) {
+      this.queuedTasksTail.next = node;
+      node.prev = this.queuedTasksTail;
+      this.queuedTasksTail = node;
+    } else {
+      this.queuedTasksHead = node;
+      this.queuedTasksTail = node;
+    }
+  }
+
+  private removeNode(node: TaskNode): void {
+    if (node.prev) {
+      node.prev.next = node.next;
+    } else {
+      this.queuedTasksHead = node.next;
+    }
+
+    if (node.next) {
+      node.next.prev = node.prev;
+    } else {
+      this.queuedTasksTail = node.prev;
+    }
   }
 }
