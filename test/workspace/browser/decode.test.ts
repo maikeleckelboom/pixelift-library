@@ -1,4 +1,3 @@
-import { describe, test, expect } from 'vitest';
 import type { ImageFormat, ImageLoader, ImageGroups } from '@test/fixtures/images';
 import { testImageGroups } from '@test/fixtures/images';
 import { decode } from '@/browser';
@@ -207,5 +206,42 @@ describe('decoder in browser environment', () => {
     // Cleanup
     pool.release(canvas1);
     pool.dispose();
+  });
+
+  test('handles aborted tasks in queue', async () => {
+    const pool = new CanvasPool(100, 100, 1);
+    const acquire1 = pool.acquire();
+    const controller = new AbortController();
+
+    // Queue multiple requests
+    const acquire2 = pool.acquire();
+    const acquire3 = pool.acquire(controller.signal);
+
+    // Abort one request
+    controller.abort();
+
+    // Release first canvas
+    const canvas = await acquire1;
+    pool.release(canvas);
+
+    // Verify results
+    await expect(acquire3).rejects.toThrow('Operation aborted');
+    await expect(acquire2).resolves.toBeInstanceOf(OffscreenCanvas);
+
+    pool.dispose();
+  });
+
+  test('rejects non-image responses', async () => {
+    const htmlResponse = new Response('<html lang="en"></html>', {
+      headers: { 'Content-Type': 'text/html' }
+    });
+
+    await expect(decode(htmlResponse)).rejects.toThrow('Unsupported image content type');
+
+    const jsonResponse = new Response(JSON.stringify({}), {
+      headers: { 'Content-Type': 'application/json' }
+    });
+
+    await expect(decode(jsonResponse)).rejects.toThrow('Unsupported image content type');
   });
 });

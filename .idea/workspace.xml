@@ -6,16 +6,14 @@
   <component name="ChangeListManager">
     <list default="true" id="2a78ba49-76cf-4b9f-8241-3a8372f62658" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/browser/decoders/canvas/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/browser/decoders/canvas/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/browser/decoders/canvas/pool/canvas-pool.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/browser/decoders/canvas/pool/canvas-pool.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/browser/utils/normalize-browser-input.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/browser/utils/normalize-browser-input.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/browser/utils/serialize-svg-element.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/browser/utils/serialize-svg-element.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/browser/utils/stream-to-blob.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/browser/utils/stream-to-blob.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/shared/abort.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/shared/abort.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/shared/env.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/shared/env.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/shared/error.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/shared/error.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/shared/formats.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/shared/formats.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/workspace/browser/decode.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/test/workspace/browser/decode.test.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/workspace/shared/calculate-resize-rect.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/test/workspace/shared/calculate-resize-rect.test.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/vitest.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/vitest.config.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,28 +34,28 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_MARK_IGNORED_FILES_AS_EXCLUDED&quot;: &quot;true&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;dev&quot;,
-    &quot;javascript.nodejs.core.library.configured.version&quot;: &quot;24.0.2&quot;,
-    &quot;javascript.nodejs.core.library.typings.version&quot;: &quot;22.15.29&quot;,
-    &quot;last_opened_file_path&quot;: &quot;//wsl.localhost/Ubuntu/home/www/npm/pixelift-library&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_interpreter_path&quot;: &quot;wsl://Ubuntu@/home/maikel/.nvm/versions/node/v24.0.2/bin/node&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;pnpm&quot;,
-    &quot;prettierjs.PrettierConfiguration.Package&quot;: &quot;\\\\wsl.localhost\\Ubuntu\\home\\www\\npm\\pixelift-library\\node_modules\\prettier&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;settings.typescriptcompiler&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;\\\\wsl.localhost\\Ubuntu\\home\\www\\npm\\pixelift-library\\node_modules\\typescript\\lib&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_MARK_IGNORED_FILES_AS_EXCLUDED": "true",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "dev",
+    "javascript.nodejs.core.library.configured.version": "24.0.2",
+    "javascript.nodejs.core.library.typings.version": "22.15.29",
+    "last_opened_file_path": "//wsl.localhost/Ubuntu/home/www/npm/pixelift-library",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_interpreter_path": "wsl://Ubuntu@/home/maikel/.nvm/versions/node/v24.0.2/bin/node",
+    "nodejs_package_manager_path": "pnpm",
+    "prettierjs.PrettierConfiguration.Package": "\\\\wsl.localhost\\Ubuntu\\home\\www\\npm\\pixelift-library\\node_modules\\prettier",
+    "settings.editor.selected.configurable": "settings.typescriptcompiler",
+    "ts.external.directory.path": "\\\\wsl.localhost\\Ubuntu\\home\\www\\npm\\pixelift-library\\node_modules\\typescript\\lib",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="\\wsl.localhost\Ubuntu\home\www\npm\pixelift-library" />

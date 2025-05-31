@@ -92,6 +92,7 @@
     "typescript": "^5"
   },
   "optionalDependencies": {
-    "sharp": "^0.34.1"
+    "sharp": "^0.34.1",
+    "dompurify": "^3.2.6"
   }
 }

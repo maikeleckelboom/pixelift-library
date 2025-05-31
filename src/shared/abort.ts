@@ -3,11 +3,15 @@
  * This is needed because Node.js does not yet support `signal.throwIfAborted`.
  *
  * @param {AbortSignal} [signal] - An optional `AbortSignal` instance to monitor for an aborted state.
+ * @param message
  * @return {void} This function does not return a value.
  */
-export function throwIfAborted(signal?: AbortSignal): void {
+export function throwIfAborted(
+  signal?: AbortSignal,
+  message: string = 'Operation aborted'
+): void {
   if (signal?.aborted) {
-    throw new DOMException('Aborted', 'AbortError');
+    throw new DOMException(message, 'AbortError');
   }
 }
 

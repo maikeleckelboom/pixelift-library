@@ -1,4 +1,5 @@
 import type { ProgressController } from '@/types';
+import { throwIfAborted } from '@/shared/abort.ts';
 
 export interface StreamToBlobOptions extends ProgressController {
   type: string;
@@ -15,9 +16,7 @@ export async function streamToBlob(
 
   try {
     while (true) {
-      if (signal?.aborted) {
-        throw new DOMException('Stream reading was aborted', 'AbortError');
-      }
+      throwIfAborted(signal, 'Aborted while reading stream to Blob');
 
       const { done, value } = await reader.read();
       if (done) break;
@@ -27,9 +26,12 @@ export async function streamToBlob(
         totalLength += value.byteLength;
         onProgress?.(totalLength);
 
-        // Allow event loop processing every 50 chunks
-        if (blobParts.length % 50 === 0) {
+        // Recycle memory every 50 chunks
+        if (blobParts.length > 50) {
           await new Promise((resolve) => setTimeout(resolve, 0));
+          const combined = new Blob(blobParts, { type });
+          blobParts.length = 0;
+          blobParts.push(combined);
         }
       }
     }

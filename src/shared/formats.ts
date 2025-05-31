@@ -44,23 +44,26 @@ export const UNIVERSAL_SUPPORTED_FORMATS = [
   'svg'
 ] as const;
 
-export const ALL_FORMATS = new Set([
+export const BROWSER_SUPPORTED_FORMATS = [
   ...CANVAS_SUPPORTED_FORMATS,
-  ...WEBCODECS_SUPPORTED_FORMATS,
+  ...WEBCODECS_SUPPORTED_FORMATS
+];
+
+export const ALL_FORMATS = new Set([
+  ...BROWSER_SUPPORTED_FORMATS,
   ...NODE_SUPPORTED_FORMATS,
   ...UNIVERSAL_SUPPORTED_FORMATS
 ]);
 
-export type SupportedFormat =
-  | (typeof CANVAS_SUPPORTED_FORMATS)[number]
-  | (typeof NODE_SUPPORTED_FORMATS)[number]
-  | (typeof UNIVERSAL_SUPPORTED_FORMATS)[number];
-
+export type BrowserFormat = (typeof BROWSER_SUPPORTED_FORMATS)[number];
+export type NodeFormat = (typeof NODE_SUPPORTED_FORMATS)[number];
 export type UniversalFormat = (typeof UNIVERSAL_SUPPORTED_FORMATS)[number];
 
-export function isUniversalFormat(format: string): format is UniversalFormat {
-  return UNIVERSAL_SUPPORTED_FORMATS.includes(format as UniversalFormat);
-}
+export type SupportedFormat = BrowserFormat | NodeFormat | UniversalFormat;
+
+export type BrowserMimeType = `image/${BrowserFormat}`;
+
+export type NodeMimeType = `image/${NodeFormat}`;
 
 export function isWebCodecsSupportedFormat(
   format: string

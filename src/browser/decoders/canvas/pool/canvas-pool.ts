@@ -1,9 +1,9 @@
 import { BrowserPoolError, BrowserPoolErrors } from '@/browser/decoders/canvas/pool/errors';
 import type { Pool, Task } from '@/browser/decoders/canvas/pool/types';
+import { createAbortablePromise } from '@/shared/abort';
 
 interface TaskNode {
   task: Task;
-  prev: TaskNode | null;
   next: TaskNode | null;
   cleanup: () => void;
 }
@@ -42,22 +42,24 @@ export class CanvasPool implements Pool {
       return Promise.resolve(canvas);
     }
 
-    return new Promise((resolve, reject) => {
-      const onAbort = () => {
-        this.removeNode(node);
-        reject(BrowserPoolErrors.OPERATION_ABORTED);
-      };
+    return createAbortablePromise(
+      new Promise<OffscreenCanvas>((resolve, reject) => {
+        const onAbort = () => {
+          this.removeNode(node);
+          reject(BrowserPoolErrors.OPERATION_ABORTED);
+        };
 
-      const node: TaskNode = {
-        task: { resolve, reject, signal },
-        prev: null,
-        next: null,
-        cleanup: () => signal?.removeEventListener('abort', onAbort)
-      };
+        const node: TaskNode = {
+          task: { resolve, reject, signal },
+          next: null,
+          cleanup: () => signal?.removeEventListener('abort', onAbort)
+        };
 
-      this.appendNode(node);
-      signal?.addEventListener('abort', onAbort, { once: true });
-    });
+        this.enqueueNode(node);
+        signal?.addEventListener('abort', onAbort, { once: true });
+      }),
+      signal
+    );
   }
 
   release(canvas: OffscreenCanvas): void {
@@ -67,20 +69,19 @@ export class CanvasPool implements Pool {
 
     this.allocatedCanvases.delete(canvas);
 
-    let currentNode = this.queuedTasksHead;
-    while (currentNode) {
-      const nextNode = currentNode.next;
-      this.removeNode(currentNode);
-      currentNode.cleanup();
+    while (this.queuedTasksHead) {
+      const node = this.queuedTasksHead;
+      this.dequeueHead();
+      node.cleanup();
 
-      if (!currentNode.task.signal?.aborted) {
-        this.allocatedCanvases.add(canvas);
-        currentNode.task.resolve(canvas);
-        return;
+      if (node.task.signal?.aborted) {
+        node.task.reject(BrowserPoolErrors.OPERATION_ABORTED);
+        continue;
       }
 
-      currentNode.task.reject(BrowserPoolErrors.OPERATION_ABORTED);
-      currentNode = nextNode;
+      this.allocatedCanvases.add(canvas);
+      node.task.resolve(canvas);
+      return;
     }
   }
 
@@ -100,10 +101,9 @@ export class CanvasPool implements Pool {
     }
   }
 
-  private appendNode(node: TaskNode): void {
+  private enqueueNode(node: TaskNode): void {
     if (this.queuedTasksTail) {
       this.queuedTasksTail.next = node;
-      node.prev = this.queuedTasksTail;
       this.queuedTasksTail = node;
     } else {
       this.queuedTasksHead = node;
@@ -111,17 +111,35 @@ export class CanvasPool implements Pool {
     }
   }
 
-  private removeNode(node: TaskNode): void {
-    if (node.prev) {
-      node.prev.next = node.next;
-    } else {
-      this.queuedTasksHead = node.next;
+  private dequeueHead(): void {
+    if (!this.queuedTasksHead) return;
+
+    this.queuedTasksHead = this.queuedTasksHead.next;
+
+    if (!this.queuedTasksHead) {
+      this.queuedTasksTail = null;
+    }
+  }
+
+  private removeNode(target: TaskNode): void {
+    if (!this.queuedTasksHead) return;
+
+    // Special case: head node
+    if (this.queuedTasksHead === target) {
+      this.dequeueHead();
+      return;
     }
 
-    if (node.next) {
-      node.next.prev = node.prev;
-    } else {
-      this.queuedTasksTail = node.prev;
+    let prev = this.queuedTasksHead;
+    while (prev.next && prev.next !== target) {
+      prev = prev.next;
+    }
+
+    if (prev.next === target) {
+      prev.next = target.next;
+      if (target === this.queuedTasksTail) {
+        this.queuedTasksTail = prev;
+      }
     }
   }
 }
