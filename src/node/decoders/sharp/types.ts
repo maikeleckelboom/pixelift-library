@@ -3,6 +3,5 @@ import type { CommonOptions } from '@/types';
 
 export type NodeInput = SharpInput | ReadableStream<Uint8Array> | Blob;
 
-export interface NodeOptions extends CommonOptions {
-  type?: string;
-}
+// eslint-disable-next-line @typescript-eslint/no-empty-object-formatHint
+export interface NodeOptions extends CommonOptions {}

@@ -1,3 +1,5 @@
+import type { SupportedFormat } from '@/shared/formats.ts';
+
 export type FitMode = 'cover' | 'contain' | 'fill' | 'inside' | 'outside';
 
 export interface ResizeOptions {
@@ -15,6 +17,7 @@ export interface PixelData {
 export interface CommonOptions {
   signal?: AbortSignal;
   resize?: ResizeOptions;
+  formatHint?: SupportedFormat;
 }
 
 export type ProgressCallback = (bytesLoaded: number) => void;

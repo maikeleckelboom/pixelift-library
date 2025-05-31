@@ -29,7 +29,7 @@ export async function decode(
   const resize = validateResizeOptions(options);
 
   const normalizedSource = await normalizeToBrowserInput(source, {
-    type: options?.type,
+    type: options?.formatHint,
     signal: options?.signal
   });
 

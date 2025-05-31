@@ -9,14 +9,14 @@ export type ImageFormat =
 
 export type ImageLoader = () => Promise<Response>;
 
-interface ImageGroups {
+export interface ImageGroups {
   small: Record<ImageFormat, ImageLoader>;
   medium: Record<ImageFormat, ImageLoader>;
   large: Record<ImageFormat, ImageLoader>;
 }
 
-const createImageRecord = (size: string) => {
-  const formats = [
+const createImageRecord = (size: string): Record<ImageFormat, ImageLoader> => {
+  const formats: { key: ImageFormat; ext: string; name: string }[] = [
     { key: 'jpeg', ext: 'jpeg', name: 'pixelift' },
     { key: 'jpg', ext: 'jpg', name: 'pixelift' },
     { key: 'png', ext: 'png', name: 'pixelift' },
@@ -28,8 +28,7 @@ const createImageRecord = (size: string) => {
 
   return formats.reduce(
     (record, { key, ext, name }) => {
-      record[key as ImageFormat] = () =>
-        fetch(new URL(`./${size}/${name}.${ext}`, import.meta.url));
+      record[key] = () => fetch(new URL(`./${size}/${name}.${ext}`, import.meta.url));
       return record;
     },
     {} as Record<ImageFormat, ImageLoader>

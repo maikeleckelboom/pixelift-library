@@ -1,4 +1,4 @@
-import { BrowserPoolErrors } from '@/browser/decoders/canvas/pool/errors';
+import { BrowserPoolError, BrowserPoolErrors } from '@/browser/decoders/canvas/pool/errors';
 import type { Pool, Task } from '@/browser/decoders/canvas/pool/types';
 
 export class CanvasPool implements Pool {
@@ -11,8 +11,9 @@ export class CanvasPool implements Pool {
     private readonly height: number,
     private readonly maxSize: number = 4
   ) {
-    if (maxSize <= 0) throw new Error(BrowserPoolErrors.INVALID_MAX_SIZE);
-    if (width <= 0 || height <= 0) throw new Error(BrowserPoolErrors.INVALID_DIMENSIONS);
+    if (maxSize <= 0) throw new BrowserPoolError.ModuleError('INVALID_MAX_SIZE');
+    if (width <= 0 || height <= 0)
+      throw new BrowserPoolError.ModuleError('INVALID_DIMENSIONS');
   }
 
   acquire(signal?: AbortSignal): Promise<OffscreenCanvas> {
@@ -64,7 +65,7 @@ export class CanvasPool implements Pool {
 
   release(canvas: OffscreenCanvas): void {
     if (!this.allocatedCanvases.has(canvas)) {
-      throw new Error(BrowserPoolErrors.RELEASE_UNACQUIRED);
+      throw new BrowserPoolError.ModuleError('RELEASE_UNACQUIRED');
     }
 
     this.allocatedCanvases.delete(canvas);
@@ -87,7 +88,7 @@ export class CanvasPool implements Pool {
     this.allocatedCanvases.clear();
 
     this.queuedTasks.forEach((task) =>
-      task.reject(new Error(BrowserPoolErrors.POOL_DISPOSED))
+      task.reject(new BrowserPoolError.ModuleError('POOL_DISPOSED'))
     );
     this.queuedTasks = [];
   }

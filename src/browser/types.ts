@@ -11,5 +11,4 @@ export type BrowserInput =
 
 export interface BrowserOptions extends CommonOptions {
   quality?: ImageSmoothingQuality;
-  type?: string;
 }
