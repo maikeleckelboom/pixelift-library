@@ -1,0 +1,22 @@
+# 1) Ignore everything...
+*
+
+# 2) But allow your compiled output...
+!dist/
+!dist/**
+
+# 3) Docs and metadata
+!README.md
+!LICENSE
+!package.json
+
+# 4) Optional: un-ignore other assets if needed
+# !CHANGELOG.md
+
+# 5) If you have other build folders (e.g. for subpacks), include them too:
+!dist/browser/
+!dist/server/
+
+# 6) Finally ignore any stray local or CI files
+node_modules/
+.env*

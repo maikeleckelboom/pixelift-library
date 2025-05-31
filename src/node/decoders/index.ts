@@ -1,6 +1,6 @@
-import type { NodeInput, NodeOptions } from '@/node/decoders/sharp/types.ts';
+import type { NodeInput, NodeOptions } from '@/node/types.ts';
 
 export async function decode(input: NodeInput, options?: NodeOptions) {
-  const decoder = await import('./sharp/decode');
+  const decoder = await import('./sharp');
   return await decoder.decode(input, options);
 }

@@ -1,9 +1,9 @@
 import { Readable } from 'stream';
-import type { StreamOptions } from '@/types';
+import type { ProgressController } from '@/types';
 
 export async function nodeStreamToBuffer(
   stream: Readable,
-  options?: StreamOptions
+  options?: ProgressController
 ): Promise<Buffer> {
   const { onProgress, signal } = options ?? {};
 

@@ -1,15 +1,27 @@
-export const BROWSER_SUPPORTED_FORMATS = [
+export const CANVAS_SUPPORTED_FORMATS = [
   'jpeg',
   'jpg',
   'png',
   'webp',
   'gif',
   'bmp',
-  'svg',
-  'avif'
+  'avif',
+  'ico',
+  'svg'
 ] as const;
 
-export const NODE_SUPPORTED_FORMATS_STATIC = [
+export const WEBCODECS_SUPPORTED_FORMATS = [
+  'jpeg',
+  'jpg',
+  'png',
+  'webp',
+  'gif',
+  'avif',
+  'bmp',
+  'ico'
+] as const;
+
+export const NODE_SUPPORTED_FORMATS = [
   'jpeg',
   'jpg',
   'png',
@@ -33,14 +45,15 @@ export const UNIVERSAL_SUPPORTED_FORMATS = [
 ] as const;
 
 export const ALL_FORMATS = new Set([
-  ...BROWSER_SUPPORTED_FORMATS,
-  ...NODE_SUPPORTED_FORMATS_STATIC,
+  ...CANVAS_SUPPORTED_FORMATS,
+  ...WEBCODECS_SUPPORTED_FORMATS,
+  ...NODE_SUPPORTED_FORMATS,
   ...UNIVERSAL_SUPPORTED_FORMATS
 ]);
 
 export type SupportedFormat =
-  | (typeof BROWSER_SUPPORTED_FORMATS)[number]
-  | (typeof NODE_SUPPORTED_FORMATS_STATIC)[number]
+  | (typeof CANVAS_SUPPORTED_FORMATS)[number]
+  | (typeof NODE_SUPPORTED_FORMATS)[number]
   | (typeof UNIVERSAL_SUPPORTED_FORMATS)[number];
 
 export type UniversalFormat = (typeof UNIVERSAL_SUPPORTED_FORMATS)[number];
@@ -49,6 +62,8 @@ export function isUniversalFormat(format: string): format is UniversalFormat {
   return UNIVERSAL_SUPPORTED_FORMATS.includes(format as UniversalFormat);
 }
 
-export function getRuntimeBrowserFormats(): SupportedFormat[] {
-  return [...BROWSER_SUPPORTED_FORMATS];
+export function isWebCodecsSupportedFormat(
+  format: string
+): format is (typeof WEBCODECS_SUPPORTED_FORMATS)[number] {
+  return (WEBCODECS_SUPPORTED_FORMATS as readonly string[]).includes(format);
 }

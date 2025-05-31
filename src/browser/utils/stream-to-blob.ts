@@ -1,6 +1,6 @@
-import type { StreamOptions } from '@/types';
+import type { ProgressController } from '@/types';
 
-export interface StreamToBlobOptions extends StreamOptions {
+export interface StreamToBlobOptions extends ProgressController {
   type: string;
 }
 

@@ -1,18 +1,18 @@
 import { streamToBlob } from '@/browser/utils/stream-to-blob.ts';
+import { serializeSVGElement } from '@/browser/utils/serialize-svg-element.ts';
 import type { BrowserInput } from '@/browser/types.ts';
+import type { ProgressController } from '@/types';
 
 /**
  * Normalize heterogeneous binary inputs into a Blob suitable for decoding.
  */
 export async function normalizeToBrowserInput(
   input: BrowserInput,
-  options: {
-    type?: string | undefined;
-    signal?: AbortSignal | undefined;
-    onProgress?: ((bytesLoaded: number) => void) | undefined;
-  } = {}
+  options: ProgressController & {
+    formatHint?: `image/${string}` | undefined;
+  }
 ): Promise<ImageBitmapSource> {
-  const { type = 'image/png', signal, onProgress } = options;
+  const { formatHint = 'image/png', signal, onProgress } = options;
 
   if (input == null) {
     throw new TypeError('Input source cannot be null or undefined');
@@ -22,22 +22,22 @@ export async function normalizeToBrowserInput(
     return input;
   }
 
-  if (input instanceof Blob || input instanceof File) {
+  if (input instanceof Blob) {
     return input;
   }
 
   if (isBufferSource(input)) {
-    return new Blob([input], { type });
+    return new Blob([input], { type: formatHint });
   }
 
   if (isReadableStream(input)) {
-    return await streamToBlob(input, { type, onProgress, signal });
+    return await streamToBlob(input, { type: formatHint, onProgress, signal });
   }
 
   if (isResponse(input)) {
     if (input.body) {
       return await streamToBlob(input.body, {
-        type,
+        type: ``,
         signal,
         onProgress
       });
@@ -46,8 +46,22 @@ export async function normalizeToBrowserInput(
     }
   }
 
+  if (isSVGElement(input)) {
+    const safeSVGString = serializeSVGElement(input);
+    return new Blob([safeSVGString], { type: 'image/svg+xml' });
+  }
+
   throw new TypeError(
     `Unsupported input type for decoding: ${Object.prototype.toString.call(input)}`
+  );
+}
+
+export function isSVGElement(value: unknown): value is SVGElement {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'ownerSVGElement' in value &&
+    value instanceof SVGElement
   );
 }
 

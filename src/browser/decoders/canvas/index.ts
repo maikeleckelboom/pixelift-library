@@ -29,7 +29,7 @@ export async function decode(
   const resize = validateResizeOptions(options);
 
   const normalizedSource = await normalizeToBrowserInput(source, {
-    type: options?.formatHint,
+    formatHint: `image/${options?.formatHint ?? 'png'}`,
     signal: options?.signal
   });
 

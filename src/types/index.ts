@@ -17,12 +17,11 @@ export interface PixelData {
 export interface CommonOptions {
   signal?: AbortSignal;
   resize?: ResizeOptions;
-  formatHint?: SupportedFormat;
 }
 
 export type ProgressCallback = (bytesLoaded: number) => void;
 
-export interface StreamOptions {
+export interface ProgressController {
   signal?: AbortSignal | undefined;
   onProgress?: ProgressCallback | undefined;
 }

@@ -1,4 +1,5 @@
 import type { CommonOptions } from '@/types';
+import type { SupportedFormat } from '@/shared/formats.ts';
 
 export type BrowserInput =
   | ImageBitmapSource
@@ -10,5 +11,6 @@ export type BrowserInput =
   | null;
 
 export interface BrowserOptions extends CommonOptions {
+  formatHint?: SupportedFormat;
   quality?: ImageSmoothingQuality;
 }

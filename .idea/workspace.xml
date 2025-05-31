@@ -5,17 +5,27 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2a78ba49-76cf-4b9f-8241-3a8372f62658" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/browser/utils/serialize-svg-element.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/nuxt-example/pnpm-lock.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/apps/nuxt-example/pnpm-lock.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pnpm-lock.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pnpm-lock.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/browser/decoders/canvas/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/browser/decoders/canvas/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/browser/decoders/canvas/pool/canvas-pool.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/browser/decoders/canvas/pool/canvas-pool.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/browser/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/browser/types.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/node/decoders/sharp/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/node/decoders/sharp/types.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/browser/utils/normalize-browser-input.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/browser/utils/normalize-browser-input.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/browser/utils/sanitize-svg-element.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/browser/utils/stream-to-blob.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/browser/utils/stream-to-blob.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/node/decoders/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/node/decoders/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/node/decoders/sharp/decode.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/node/decoders/sharp/formats.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/node/decoders/sharp/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/node/decoders/sharp/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/node/decoders/sharp/load-sharp.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/node/decoders/sharp/load.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/node/decoders/sharp/types.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/node/types.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/node/types.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/node/utils/node-stream-to-buffer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/node/utils/node-stream-to-buffer.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/node/utils/normalize-node-input.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/node/utils/normalize-node-input.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/node/utils/web-stream-to-buffer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/node/utils/web-stream-to-buffer.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/shared/formats.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/shared/formats.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/types/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/types/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/fixtures/images/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/test/fixtures/images/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/workspace/browser/decode.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/test/workspace/browser/decode.test.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vitest.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/vitest.config.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -45,7 +55,7 @@
     "git-widget-placeholder": "dev",
     "javascript.nodejs.core.library.configured.version": "24.0.2",
     "javascript.nodejs.core.library.typings.version": "22.15.29",
-    "last_opened_file_path": "//wsl.localhost/Ubuntu/home/www/npm/pixelift-library/test/workspace/browser",
+    "last_opened_file_path": "//wsl.localhost/Ubuntu/home/www/npm/pixelift-library",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -60,11 +70,11 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="\\wsl.localhost\Ubuntu\home\www\npm\pixelift-library" />
+      <recent name="\\wsl.localhost\Ubuntu\home\www\npm\pixelift-library\src\browser\utils" />
       <recent name="\\wsl.localhost\Ubuntu\home\www\npm\pixelift-library\test\workspace\browser" />
       <recent name="\\wsl.localhost\Ubuntu\home\www\npm\pixelift-library\src\shared" />
       <recent name="\\wsl.localhost\Ubuntu\home\www\npm\pixelift-library\src\browser\decode" />
-      <recent name="\\wsl.localhost\Ubuntu\home\www\npm\pixelift-library\src\node\decode" />
-      <recent name="\\wsl.localhost\Ubuntu\home\www\npm\pixelift-library\src\node" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="\\wsl.localhost\Ubuntu\home\www\npm\pixelift-library\src\types" />

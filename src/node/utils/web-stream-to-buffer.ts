@@ -1,8 +1,8 @@
-import type { StreamOptions } from '@/types';
+import type { ProgressController } from '@/types';
 
 export async function webStreamToBuffer(
   stream: ReadableStream<Uint8Array>,
-  options?: StreamOptions
+  options?: ProgressController
 ): Promise<Buffer> {
   const { onProgress, signal } = options ?? {};
 

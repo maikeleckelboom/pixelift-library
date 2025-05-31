@@ -1,12 +1,13 @@
 import { nodeStreamToBuffer } from '@/node/utils/node-stream-to-buffer.ts';
 import { webStreamToBuffer } from '@/node/utils/web-stream-to-buffer.ts';
-import type { NodeInput, StreamOptions } from '@/node/decoders/sharp/types.ts';
+import type { NodeInput } from '@/node/decoders/sharp/types.ts';
 import type { SharpInput } from 'sharp';
 import { Readable } from 'stream';
+import type { ProgressController } from '@/types';
 
 export async function normalizeNodeInput(
   input: NodeInput,
-  options?: StreamOptions
+  options?: ProgressController
 ): Promise<SharpInput> {
   if (isBlob(input)) {
     return await blobToBuffer(input);
