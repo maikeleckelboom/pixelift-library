@@ -1,5 +1,6 @@
 import type { CommonOptions } from '@/types';
 import type { SupportedFormat } from '@/shared/formats.ts';
+import type { Pool } from '@/browser/decoders/canvas/pool/types.ts';
 
 export type BrowserInput =
   | ImageBitmapSource
@@ -13,4 +14,5 @@ export type BrowserInput =
 export interface BrowserOptions extends CommonOptions {
   formatHint?: SupportedFormat;
   quality?: ImageSmoothingQuality;
+  pool?: Pool;
 }

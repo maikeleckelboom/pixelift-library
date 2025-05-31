@@ -1,5 +1,3 @@
-import type { SupportedFormat } from '@/shared/formats.ts';
-
 export type FitMode = 'cover' | 'contain' | 'fill' | 'inside' | 'outside';
 
 export interface ResizeOptions {

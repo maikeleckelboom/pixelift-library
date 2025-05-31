@@ -2,7 +2,6 @@ import { CanvasPool } from '@/browser/decoders/canvas/pool/canvas-pool';
 import { normalizeToBrowserInput } from '@/browser/utils/normalize-browser-input.ts';
 import { calculateResizeRect } from '@/shared/calculate-resize-rect.ts';
 import type { PixelData } from '@/types';
-import type { Pool } from '@/browser/decoders/canvas/pool/types';
 import type { BrowserInput, BrowserOptions } from '@/browser/types';
 import {
   CANVAS_IMAGE_SMOOTHING,
@@ -18,33 +17,31 @@ const canvasPool = new CanvasPool(
 );
 
 export async function decode(
-  source: BrowserInput,
-  optionsOrPool?: BrowserOptions | Pool,
-  maybeOptions?: BrowserOptions
+  input: BrowserInput,
+  options: BrowserOptions = {}
 ): Promise<PixelData> {
-  const [pool, options] = hasPool(optionsOrPool)
-    ? [optionsOrPool, maybeOptions]
-    : [canvasPool, optionsOrPool];
+  const opts = options ?? {};
 
-  const resize = validateResizeOptions(options);
+  const pool = opts.pool ?? canvasPool;
 
-  const normalizedSource = await normalizeToBrowserInput(source, {
-    formatHint: `image/${options?.formatHint ?? 'png'}`,
-    signal: options?.signal
+  const resize = validateResizeOptions(opts);
+
+  const normalizedSource = await normalizeToBrowserInput(input, {
+    formatHint: `image/${opts.formatHint ?? 'png'}`,
+    signal: opts.signal
   });
 
   const imageBitmap = await createImageBitmap(normalizedSource);
   const targetWidth = resize?.width ?? imageBitmap.width;
   const targetHeight = resize?.height ?? imageBitmap.height;
 
-  const canvas = await pool.acquire(options?.signal);
+  const canvas = await pool.acquire(opts.signal);
 
   try {
     canvas.width = targetWidth;
     canvas.height = targetHeight;
 
     const context = canvas.getContext('2d', CANVAS_RENDERING_CONTEXT_2D_SETTINGS);
-
     if (!context) {
       throw new BrowserDecodeError.ModuleError('CONTEXT_UNAVAILABLE', {
         context: { canvas }
@@ -57,7 +54,7 @@ export async function decode(
     ) {
       context.imageSmoothingEnabled = CANVAS_IMAGE_SMOOTHING.imageSmoothingEnabled;
       context.imageSmoothingQuality =
-        options?.quality ?? CANVAS_IMAGE_SMOOTHING.imageSmoothingQuality;
+        opts.quality ?? CANVAS_IMAGE_SMOOTHING.imageSmoothingQuality;
     }
 
     const { sx, sy, sw, sh, dx, dy, dw, dh } = calculateResizeRect(
@@ -83,8 +80,4 @@ export async function decode(
     imageBitmap.close();
     pool.release(canvas);
   }
-}
-
-export function hasPool(input: unknown): input is Pool {
-  return !!input && typeof input === 'object' && 'acquire' in input && 'release' in input;
 }
