@@ -1,6 +1,6 @@
+import { createAbortablePromise } from '@/shared/abort';
 import { BrowserPoolError, BrowserPoolErrors } from '@/browser/decoders/canvas/pool/errors';
 import type { Pool, Task } from '@/browser/decoders/canvas/pool/types';
-import { createAbortablePromise } from '@/shared/abort';
 
 interface TaskNode {
   task: Task;

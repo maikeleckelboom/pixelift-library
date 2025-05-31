@@ -1,20 +1,20 @@
 import { streamToBlob } from '@/browser/utils/stream-to-blob.ts';
 import { serializeSVGElement } from '@/browser/utils/serialize-svg-element.ts';
 import type { BrowserInput } from '@/browser/types.ts';
-import type { ProgressController } from '@/types';
-import { BROWSER_SUPPORTED_FORMATS } from '@/shared/formats.ts';
-import { BROWSER_SUPPORTED_MIME_TYPES } from '@/browser/utils/mime-types.ts';
+import { getMimeTypeForFormat, validateBrowserFormat } from '@/shared/formats.ts';
 
 /**
  * Normalize heterogeneous binary inputs into a Blob suitable for decoding.
  */
 export async function normalizeToBrowserInput(
   input: BrowserInput,
-  options: ProgressController & {
-    formatHint?: `image/${string}` | undefined;
+  options: {
+    signal?: AbortSignal | undefined;
+    onProgress?: ((progress: number) => void) | undefined;
+    formatHint?: string;
   }
 ): Promise<ImageBitmapSource> {
-  const { formatHint = 'image/png', signal, onProgress } = options;
+  const { formatHint, signal, onProgress } = options;
 
   if (input == null) {
     throw new TypeError('Input source cannot be null or undefined');
@@ -28,20 +28,28 @@ export async function normalizeToBrowserInput(
     return input;
   }
 
+  const mimeType = getMimeTypeForFormat(formatHint ?? 'png');
+
   if (isBufferSource(input)) {
-    return new Blob([input], { type: formatHint });
+    return new Blob([input], { type: mimeType });
   }
 
   if (isReadableStream(input)) {
-    return await streamToBlob(input, { type: formatHint, onProgress, signal });
+    return await streamToBlob(input, {
+      type: getMimeTypeForFormat(mimeType),
+      onProgress,
+      signal
+    });
   }
 
   if (isResponse(input)) {
-    const contentType = input.headers.get('content-type') ?? '';
-    const [mimeType] = contentType.split(';');
+    if (!formatHint) {
+      const contentType = input.headers.get('content-type') ?? '';
+      const [contentMimeType] = contentType.split(';') as [string, ...string[]];
 
-    if (!mimeType || !BROWSER_SUPPORTED_MIME_TYPES.has(mimeType.trim())) {
-      throw new TypeError(`Unsupported image content type: ${contentType}`);
+      if (!validateBrowserFormat(contentMimeType)) {
+        throw new TypeError(`Unsupported content type: ${contentMimeType}`);
+      }
     }
 
     if (input.body) {

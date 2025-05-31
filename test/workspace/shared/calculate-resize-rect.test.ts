@@ -1,4 +1,7 @@
-import { calculateResizeRect, type ResizeRect } from '@/shared/calculate-resize-rect';
+import {
+  calculateResizeRect,
+  type ResizeRect
+} from '@/browser/utils/calculate-resize-rect.ts';
 
 const createRect = (
   sx: number,

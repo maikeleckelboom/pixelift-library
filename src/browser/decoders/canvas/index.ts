@@ -1,6 +1,6 @@
 import { CanvasPool } from '@/browser/decoders/canvas/pool/canvas-pool';
 import { normalizeToBrowserInput } from '@/browser/utils/normalize-browser-input.ts';
-import { calculateResizeRect } from '@/shared/calculate-resize-rect.ts';
+import { calculateResizeRect } from '@/browser/utils/calculate-resize-rect.ts';
 import type { PixelData } from '@/types';
 import type { BrowserInput, BrowserOptions } from '@/browser/types';
 import {
@@ -33,7 +33,6 @@ export async function decode(
   options: BrowserOptions = {}
 ): Promise<PixelData> {
   const opts = options ?? {};
-
   const pool = opts.pool ?? canvasPool;
 
   const resize = validateResizeOptions(opts);
