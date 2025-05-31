@@ -5,18 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2a78ba49-76cf-4b9f-8241-3a8372f62658" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/browser/utils/normalize-to-bitmap-source.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/browser/decoders/canvas/defaults.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/browser/decoders/canvas/defaults.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/browser/decoders/canvas/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/browser/decoders/canvas/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/browser/utils/calculate-resize-rect.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/browser/utils/calculate-resize-rect.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/browser/utils/normalize-browser-input.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/browser/utils/serialize-svg-element.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/browser/utils/serialize-svg-element.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/node/utils/node-stream-to-buffer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/node/utils/node-stream-to-buffer.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/node/utils/normalize-node-input.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/node/utils/normalize-node-input.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/node/utils/web-stream-to-buffer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/node/utils/web-stream-to-buffer.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/types/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/types/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/browser/decoders/canvas/pool/canvas-pool.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/browser/decoders/canvas/pool/canvas-pool.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/vitest.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/vitest.config.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

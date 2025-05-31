@@ -1,9 +1,9 @@
-import { defineConfig } from 'vitest/config';
+import { defineConfig, type TestProjectConfiguration } from 'vitest/config';
 import SnapshotLastSequencer from './test/fixtures/snapshot-last-sequencer';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import path from 'node:path';
 
-const commonOptions = {
+const commonOptions: TestProjectConfiguration = {
   extends: true,
   resolve: {
     alias: {
@@ -19,6 +19,7 @@ export default defineConfig({
     globals: true,
     isolate: true,
     sequence: { sequencer: SnapshotLastSequencer },
+    testTimeout: 30_000,
     exclude: [],
     workspace: [
       {
@@ -31,7 +32,6 @@ export default defineConfig({
             'test/workspace/shared/**/*.test.ts'
           ],
           // exclude: ['**/*slow*.test.ts'],
-          testTimeout: 30_000,
           benchmark: { include: ['test/workspace/node/**/*.bench.ts'] }
         }
       },
@@ -55,9 +55,8 @@ export default defineConfig({
               // { browser: 'firefox' },
               // { browser: 'webkit' }
             ]
-          },
+          }
           // exclude: ['**/*slow*.test.ts'],
-          testTimeout: 30_000
         }
       }
     ]

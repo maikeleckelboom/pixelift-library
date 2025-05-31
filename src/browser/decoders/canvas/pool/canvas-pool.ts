@@ -79,8 +79,11 @@ export class CanvasPool implements Pool {
         continue;
       }
 
-      this.allocatedCanvases.add(canvas);
-      node.task.resolve(canvas);
+      // Create a NEW canvas for the queued task
+      const newCanvas = new OffscreenCanvas(this.width, this.height);
+      this.pool.push(newCanvas);
+      this.allocatedCanvases.add(newCanvas);
+      node.task.resolve(newCanvas);
       return;
     }
   }
