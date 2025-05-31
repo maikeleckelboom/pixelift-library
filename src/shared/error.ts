@@ -1,18 +1,66 @@
-export type PixeliftErrorKind = 'Decode' | 'Validation' | 'IO' | 'Internal';
+export type PixeliftErrorKind = 'Decode' | 'Validation' | 'IO' | 'Internal' | (string & {});
 
-export class PixeliftError extends Error {
-  override readonly name: string;
-  readonly kind: PixeliftErrorKind;
+/**
+ * Base Pixelift error class.
+ *
+ * @template K - error kind string union (e.g. 'Decode', 'Validation', etc)
+ */
+export class PixeliftError<K extends PixeliftErrorKind = string> extends Error {
+  readonly kind: K;
   readonly cause?: unknown;
 
   constructor(
-      kind: PixeliftErrorKind,
-      message: string,
-      options?: { cause?: unknown }
+    kind: K,
+    message: string,
+    options: { cause?: unknown; context?: Record<string, unknown> } = {}
   ) {
     super(message, options);
-    this.name = new.target.name;
     this.kind = kind;
-    this.cause = options?.cause;
+    this.cause = options.cause;
+
+    if (options.context) {
+      Object.assign(this, options.context);
+    }
+
+    Object.defineProperty(this, 'name', {
+      value: new.target.name,
+      configurable: true,
+      writable: false
+    });
   }
+}
+
+/**
+ * Factory function to create a module-specific error class and messages map.
+ *
+ * @template K - keys of the messages object (error codes)
+ * @template M - record of error codes to string/Error messages
+ *
+ * @param moduleName - string prefix for the error class name
+ * @param messages - map of error keys to error messages (string or Error)
+ * @returns object with `messages` and `ModuleError` class
+ */
+export function createErrorModule<K extends string, M extends Record<K, string | Error>>(
+  moduleName: string,
+  messages: M
+) {
+  type Keys = Extract<keyof M, string>;
+
+  class ModuleError extends PixeliftError<Keys> {
+    constructor(
+      kind: Keys,
+      options?: { cause?: unknown; context?: Record<string, unknown> }
+    ) {
+      const msg = messages[kind];
+      super(kind, typeof msg === 'string' ? msg : msg.message, options);
+
+      Object.defineProperty(this, 'name', {
+        value: `${moduleName}Error`,
+        configurable: true,
+        writable: false
+      });
+    }
+  }
+
+  return { messages, ModuleError };
 }

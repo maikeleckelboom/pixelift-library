@@ -5,6 +5,6 @@ export async function decode(
   input: BrowserInput,
   options?: BrowserOptions
 ): Promise<PixelData> {
-  const decoder = await import('@/browser/decoders');
+  const decoder = await import('@/browser/decoders/canvas');
   return await decoder.decode(input, options);
 }

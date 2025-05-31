@@ -3,13 +3,13 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
-      "@public/*": ["public/*"],
       "@test/*": ["test/*"],
+      "@apps/*": ["apps/*"]
     },
-    "lib": ["ESNext", "DOM", "DOM.AsyncIterable", "WebWorker"],
+    "lib": ["ESNext", "DOM", "WebWorker"],
     "target": "ESNext",
     "module": "ESNext",
-      "moduleDetection": "force",
+    "moduleDetection": "force",
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
@@ -33,5 +33,5 @@
     "types": ["@types/node", "@types/web", "@vitest/browser/matchers", "vitest/globals"]
   },
   "exclude": ["node_modules", "dist"],
-  "include": ["src/**/*", "test/**/*"],
+  "include": ["src/**/*", "test/**/*"]
 }
