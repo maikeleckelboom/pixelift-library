@@ -27,12 +27,12 @@ export default defineConfig({
           name: 'node',
           environment: 'node',
           include: [
-            'test/workspace/server/**/*.test.ts',
+            'test/workspace/node/**/*.test.ts',
             'test/workspace/shared/**/*.test.ts'
           ],
-          benchmark: { include: ['test/workspace/server/**/*.bench.ts'] },
-          testTimeout: 30_000
           // exclude: ['**/*slow*.test.ts'],
+          testTimeout: 30_000,
+          benchmark: { include: ['test/workspace/node/**/*.bench.ts'] }
         }
       },
       {
@@ -56,9 +56,8 @@ export default defineConfig({
               // { browser: 'webkit' }
             ]
           },
-          testTimeout: 30_000
-
           // exclude: ['**/*slow*.test.ts'],
+          testTimeout: 30_000
         }
       }
     ]

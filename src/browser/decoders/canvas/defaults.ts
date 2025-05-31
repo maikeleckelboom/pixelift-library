@@ -8,7 +8,7 @@ export const IMAGE_DATA_SETTINGS: ImageDataSettings = {
 } as const;
 
 export const CANVAS_IMAGE_SMOOTHING: CanvasImageSmoothing = {
-  imageSmoothingEnabled: true,
+  imageSmoothingEnabled: false,
   imageSmoothingQuality: 'high'
 } as const;
 

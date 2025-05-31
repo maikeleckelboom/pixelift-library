@@ -1,5 +1,5 @@
 import { CanvasPool } from '@/browser/decoders/canvas/pool/canvas-pool';
-import { normalizeToBrowserInput } from '@/browser/utils/normalize-browser-input.ts';
+import { normalizeToBitmapSource } from '@/browser/utils/normalize-to-bitmap-source.ts';
 import { calculateResizeRect } from '@/browser/utils/calculate-resize-rect.ts';
 import type { PixelData } from '@/types';
 import type { BrowserInput, BrowserOptions } from '@/browser/types';
@@ -37,8 +37,8 @@ export async function decode(
 
   const resize = validateResizeOptions(opts);
 
-  const normalizedSource = await normalizeToBrowserInput(input, {
-    formatHint: `image/${opts.formatHint ?? 'png'}`,
+  const normalizedSource = await normalizeToBitmapSource(input, {
+    formatHint: opts.formatHint,
     signal: opts.signal
   });
 

@@ -1,5 +1,4 @@
 import { isDebugEnabled } from '@/shared/debug.ts';
-import type { BrowserInput } from '@/browser/types.ts';
 
 declare global {
   interface Window {
@@ -31,10 +30,4 @@ export function serializeSVGElement(input: SVGElement): string {
   }
 
   return new XMLSerializer().serializeToString(clone);
-}
-
-export function isSVGInput(input: BrowserInput): boolean {
-  return (
-    input instanceof SVGElement || (input instanceof Blob && input.type === 'image/svg+xml')
-  );
 }
