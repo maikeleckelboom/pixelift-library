@@ -10,7 +10,7 @@ import { validateResizeOptions } from '@/shared/validate.ts';
 const canvasPool = new CanvasPool(
   2048,
   2048,
-  Math.max(1, navigator.hardwareConcurrency - 1)
+  Math.min(Math.max(2, Math.floor(navigator.hardwareConcurrency * 0.5)), 6)
 );
 
 /**
@@ -92,5 +92,6 @@ export async function decode(
   } finally {
     if (imageBitmap) imageBitmap.close();
     pool.release(canvas);
+    // imageData = null;
   }
 }

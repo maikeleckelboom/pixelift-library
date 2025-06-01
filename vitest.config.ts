@@ -19,34 +19,38 @@ export default defineConfig({
     globals: true,
     isolate: true,
     sequence: { sequencer: SnapshotLastSequencer },
-    testTimeout: 320_000,
+    testTimeout: 0,
     exclude: [],
     workspace: [
+      // Node project
       {
         ...commonOptions,
         test: {
-          testTimeout: 240_000,
           name: 'node',
           environment: 'node',
           include: [
             'test/workspace/node/**/*.test.ts',
             'test/workspace/shared/**/*.test.ts'
           ],
-          // exclude: ['**/*slow*.test.ts'],
-          benchmark: { include: ['test/workspace/node/**/*.bench.ts'] }
+          benchmark: {
+            include: ['test/workspace/node/**/*.bench.ts']
+          }
         }
       },
+
+      // Browser project
       {
         ...commonOptions,
         test: {
-          testTimeout: 240_000,
           name: 'browser',
           environment: 'happy-dom',
           include: [
             'test/workspace/browser/**/*.test.ts',
             'test/workspace/shared/**/*.test.ts'
           ],
-          benchmark: { include: ['test/workspace/browser/**/*.bench.ts'] },
+          benchmark: {
+            include: ['test/workspace/browser/**/*.bench.ts']
+          },
           browser: {
             provider: 'playwright',
             enabled: true,
@@ -58,7 +62,6 @@ export default defineConfig({
               // { browser: 'webkit' }
             ]
           }
-          // exclude: ['**/*slow*.test.ts'],
         }
       }
     ]

@@ -25,6 +25,14 @@ export class CanvasPool implements Pool {
     if (width <= 0 || height <= 0) {
       throw new BrowserPoolError.ModuleError('INVALID_DIMENSIONS');
     }
+    this.warmUpPool();
+  }
+
+  private warmUpPool() {
+    while (this.pool.length < Math.min(2, this.maxSize)) {
+      const canvas = new OffscreenCanvas(this.width, this.height);
+      this.pool.push(canvas);
+    }
   }
 
   acquire(signal?: AbortSignal): Promise<OffscreenCanvas> {

@@ -5,18 +5,46 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2a78ba49-76cf-4b9f-8241-3a8372f62658" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/PERFORMANCE.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/fixtures/images/benchmarks/2025-06-01/Concurrency Performance.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/fixtures/images/benchmarks/2025-06-01/Core Decode Operations.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/fixtures/images/benchmarks/2025-06-01/Performance Regression Detection.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/fixtures/images/benchmarks/2025-06-01/Resize Operations.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/fixtures/images/benchmarks/2025-06-01/Scalability Analysis.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/fixtures/images/benchmarks/2025-06-01/Stress &amp; Edge Casses.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/workspace/browser/benchmarks/decode.bench.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/workspace/browser/canvas-pool.test.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/test/workspace/node/benchmarks/decode.bench.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/playwright.config.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/browser/decoders/canvas/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/browser/decoders/canvas/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/browser/decoders/canvas/pool/canvas-pool.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/browser/decoders/canvas/pool/canvas-pool.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/fixtures/images/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/test/fixtures/images/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/fixtures/images/sanity.test.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/fixtures/images/large/animated/pixelift.gif" beforeDir="false" afterPath="$PROJECT_DIR$/test/fixtures/images/large/animated/pixelift.gif" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/fixtures/images/large/animated/pixelift.webp" beforeDir="false" afterPath="$PROJECT_DIR$/test/fixtures/images/large/animated/pixelift.webp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/fixtures/images/large/pixelift.gif" beforeDir="false" afterPath="$PROJECT_DIR$/test/fixtures/images/large/pixelift.gif" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/fixtures/images/large/pixelift.jpeg" beforeDir="false" afterPath="$PROJECT_DIR$/test/fixtures/images/large/pixelift.jpeg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/fixtures/images/large/pixelift.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/test/fixtures/images/large/pixelift.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/fixtures/images/large/pixelift.png" beforeDir="false" afterPath="$PROJECT_DIR$/test/fixtures/images/large/pixelift.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/fixtures/images/large/pixelift.webp" beforeDir="false" afterPath="$PROJECT_DIR$/test/fixtures/images/large/pixelift.webp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test/workspace/browser/decode.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/test/workspace/browser/decode.test.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/workspace/browser/index.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/test/workspace/browser/index.test.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/workspace/node/index.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/test/workspace/node/index.test.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/workspace/browser/index.test.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/workspace/shared/calculate-resize-rect.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/test/workspace/shared/calculate-resize-rect.test.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/workspace/shared/fixtures.test.ts" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/vitest.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/vitest.config.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="TypeScript File" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -41,7 +69,7 @@
     "git-widget-placeholder": "dev",
     "javascript.nodejs.core.library.configured.version": "24.0.2",
     "javascript.nodejs.core.library.typings.version": "22.15.29",
-    "last_opened_file_path": "//wsl.localhost/Ubuntu/home/www/npm/pixelift-library/test/workspace/node",
+    "last_opened_file_path": "//wsl.localhost/Ubuntu/home/www/npm/pixelift-library/test/fixtures/images/benchmarks",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -56,18 +84,18 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="\\wsl.localhost\Ubuntu\home\www\npm\pixelift-library\test\fixtures\images\benchmarks" />
+      <recent name="\\wsl.localhost\Ubuntu\home\www\npm\pixelift-library\test\fixtures\images\large" />
       <recent name="\\wsl.localhost\Ubuntu\home\www\npm\pixelift-library\test\workspace\node" />
       <recent name="\\wsl.localhost\Ubuntu\home\www\npm\pixelift-library\test\fixtures\images" />
       <recent name="\\wsl.localhost\Ubuntu\home\www\npm\pixelift-library\test\fixtures\images\1024" />
-      <recent name="\\wsl.localhost\Ubuntu\home\www\npm\pixelift-library" />
-      <recent name="\\wsl.localhost\Ubuntu\home\www\npm\pixelift-library\src\browser\utils" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="\\wsl.localhost\Ubuntu\home\www\npm\pixelift-library\test\fixtures\images\small\animated" />
+      <recent name="\\wsl.localhost\Ubuntu\home\www\npm\pixelift-library\test\fixtures\images\benchmarks\2025-06-01" />
+      <recent name="\\wsl.localhost\Ubuntu\home\www\npm\pixelift-library\test\workspace\browser\benchmarks" />
       <recent name="\\wsl.localhost\Ubuntu\home\www\npm\pixelift-library\test\fixtures\images\large" />
-      <recent name="\\wsl.localhost\Ubuntu\home\www\npm\pixelift-library\test\fixtures\images\large\animated" />
-      <recent name="\\wsl.localhost\Ubuntu\home\www\npm\pixelift-library\test\fixtures\images\medium\animated" />
-      <recent name="\\wsl.localhost\Ubuntu\home\www\npm\pixelift-library\test\fixtures\images\medium" />
+      <recent name="\\wsl.localhost\Ubuntu\home\www\npm\pixelift-library\test\fixtures\images\2k" />
+      <recent name="\\wsl.localhost\Ubuntu\home\www\npm\pixelift-library\test\fixtures\images\small\animated" />
     </key>
   </component>
   <component name="SharedIndexes">
