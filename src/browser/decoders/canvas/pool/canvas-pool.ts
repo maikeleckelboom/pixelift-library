@@ -13,6 +13,7 @@ export class CanvasPool implements Pool {
   private queuedTasksHead: TaskNode | null = null;
   private queuedTasksTail: TaskNode | null = null;
   private readonly queueMaxSize: number;
+  private currentQueueSizeInternal: number = 0;
 
   constructor(
     private readonly width: number,
@@ -69,7 +70,6 @@ export class CanvasPool implements Pool {
         cleanup: () => signal?.removeEventListener('abort', onAbort)
       };
 
-      // Queue size enforcement (CRITICAL)
       if (this.getCurrentQueueSize() >= this.queueMaxSize) {
         node.cleanup();
         reject(new BrowserPoolError.ModuleError('QUEUE_FULL'));
@@ -124,7 +124,6 @@ export class CanvasPool implements Pool {
   }
 
   dispose(): void {
-    // Destroy all canvas resources (CRITICAL)
     this.pool.forEach((canvas) => this.destroyCanvasResources(canvas));
     this.pool = [];
     this.allocatedCanvases.clear();
@@ -192,15 +191,12 @@ export class CanvasPool implements Pool {
     }
   }
 
-  // Minimal resource cleanup (CRITICAL)
   private destroyCanvasResources(canvas: OffscreenCanvas): void {
     try {
       // Most effective cross-browser cleanup
       const ctx = canvas.getContext('2d');
-      if (ctx) {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-      }
-      // Resetting canvas size helps GC (Garbage Collector)
+      if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+      // Resetting canvas size helps GC
       canvas.width = 1;
       canvas.height = 1;
     } catch {}
