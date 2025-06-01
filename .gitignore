@@ -29,9 +29,12 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 *.tsbuildinfo
 
 # IntelliJ based IDEs
-.idea/*
+.idea
 
 # Finder (MacOS) folder config
 .DS_Store
 
 .bun.lock
+
+# pnpm lock file
+pnpm-lock.yaml
