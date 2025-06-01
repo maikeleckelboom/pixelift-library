@@ -90,8 +90,9 @@ export async function decode(
       height: targetHeight
     };
   } finally {
-    if (imageBitmap) imageBitmap.close();
+    if (imageBitmap) {
+      imageBitmap.close();
+    }
     pool.release(canvas);
-    // imageData = null;
   }
 }

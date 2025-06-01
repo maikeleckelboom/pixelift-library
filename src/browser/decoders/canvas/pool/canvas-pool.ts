@@ -12,8 +12,9 @@ export class CanvasPool implements Pool {
   private allocatedCanvases = new Set<OffscreenCanvas>();
   private queuedTasksHead: TaskNode | null = null;
   private queuedTasksTail: TaskNode | null = null;
-  private readonly queueMaxSize: number;
   private currentQueueSizeInternal: number = 0;
+  private readonly queueMaxSize: number;
+  private isDisposed = false;
 
   constructor(
     private readonly width: number,
@@ -35,6 +36,10 @@ export class CanvasPool implements Pool {
   }
 
   acquire(signal?: AbortSignal): Promise<OffscreenCanvas> {
+    if (this.isDisposed) {
+      return Promise.reject(new BrowserPoolError.ModuleError('POOL_DISPOSED'));
+    }
+
     if (signal?.aborted) {
       return Promise.reject(BrowserPoolErrors.OPERATION_ABORTED);
     }
@@ -140,6 +145,8 @@ export class CanvasPool implements Pool {
       currentNode.task.reject(new BrowserPoolError.ModuleError('POOL_DISPOSED'));
       currentNode = nextNode;
     }
+
+    this.isDisposed = true;
   }
 
   private enqueueNode(node: TaskNode): void {

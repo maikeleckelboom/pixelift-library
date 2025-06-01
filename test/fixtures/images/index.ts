@@ -130,8 +130,7 @@ const createImageAsset = (config: {
     },
     async asBuffer() {
       const fs = await import('fs/promises');
-      const buffer = await fs.readFile(filePath);
-      return buffer;
+      return await fs.readFile(filePath);
     }
   };
 };

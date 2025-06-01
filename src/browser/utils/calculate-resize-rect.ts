@@ -18,7 +18,6 @@ export function calculateResizeRect(
 ): ResizeRect {
   const srcAspect = srcWidth / srcHeight;
 
-  // Create mutable vars
   let targetW = width;
   let targetH = height;
 
