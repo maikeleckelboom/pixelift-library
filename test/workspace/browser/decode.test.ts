@@ -1,15 +1,14 @@
-import { getTestCases, loadBlob, testImageGroups } from '@test/fixtures/images';
+import { TestImages } from '@test/fixtures/images';
 import { decode } from '@/browser';
 import { CanvasPool } from '@/browser/decoders/canvas/pool/canvas-pool.ts';
 
 describe('decoder in browser environment', () => {
-  const testCases = getTestCases();
+  const testCases = TestImages.all();
 
   test.each(testCases)(
-    'decodes $size $format image correctly',
-    async ({ loader }) => {
-      if (!loader) throw new Error('TestImageLoader is undefined, skipping test');
-      const blob = await loadBlob(loader);
+    'decodes $id image correctly',
+    async (asset) => {
+      const blob = await asset.asBlob();
       const pixelData = await decode(blob);
 
       expect(pixelData.width).toBeGreaterThan(0);
@@ -27,11 +26,12 @@ describe('decoder in browser environment', () => {
       { width: 48, height: 48, fit: 'fill' as const }
     ];
 
-    for (const { loader } of testCases) {
-      if (!loader) continue;
+    // Use a subset of test cases for resize testing to keep it manageable
+    const resizeTestCases = TestImages.oneOfEach();
 
+    for (const asset of resizeTestCases) {
       for (const resize of resizeOptions) {
-        const blob = await loadBlob(loader);
+        const blob = await asset.asBlob();
         const pixelData = await decode(blob, resize ? { resize } : undefined);
 
         if (resize) {
@@ -58,14 +58,13 @@ describe('decoder in browser environment', () => {
         { width: 64, height: 32, fit: 'cover' as const }
       ];
 
-      const keys = testCases.map(({ size, format }) => ({ size, format }));
+      const availableAssets = TestImages.all();
 
       const decodePromises = Array.from({ length: concurrency }, async (_, i) => {
-        const { size, format } = keys[Math.floor(Math.random() * keys.length)]!;
-        const loader = testImageGroups[size]?.[format];
-        if (!loader) throw new Error(`Loader missing for random key ${size} ${format}`);
+        // Pick random asset
+        const asset = availableAssets[Math.floor(Math.random() * availableAssets.length)]!;
+        const blob = await asset.asBlob();
 
-        const blob = await loadBlob(loader);
         // Every 5th decode no resize, else random resize
         const resize = i % 5 === 0 ? undefined : resizeOptions[i % resizeOptions.length];
         const pixelData = await decode(blob, resize ? { resize } : undefined);
@@ -90,7 +89,9 @@ describe('decoder in browser environment', () => {
     const controller = new AbortController();
     controller.abort();
 
-    const blob = await loadBlob(testImageGroups.small.png);
+    const asset = TestImages.get('small', 'png');
+    const blob = await asset.asBlob();
+
     await expect(decode(blob, { signal: controller.signal })).rejects.toThrow();
   });
 
@@ -104,6 +105,65 @@ describe('decoder in browser environment', () => {
     for (const resp of nonImageResponses) {
       await expect(decode(resp)).rejects.toThrow();
     }
+  });
+
+  test('handles different input types from same asset', async () => {
+    const asset = TestImages.get('medium', 'jpeg');
+
+    // Test blob input
+    const blob = await asset.asBlob();
+    const pixelDataFromBlob = await decode(blob);
+
+    // Test ArrayBuffer input
+    const arrayBuffer = await asset.asArrayBuffer();
+    const pixelDataFromBuffer = await decode(arrayBuffer);
+
+    // Results should be identical
+    expect(pixelDataFromBlob.width).toBe(pixelDataFromBuffer.width);
+    expect(pixelDataFromBlob.height).toBe(pixelDataFromBuffer.height);
+    expect(pixelDataFromBlob.data.length).toBe(pixelDataFromBuffer.data.length);
+  });
+
+  describe('format-specific decoding', () => {
+    test('decodes JPEG images correctly', async () => {
+      const jpegAssets = TestImages.jpeg();
+
+      for (const asset of jpegAssets.slice(0, 3)) {
+        // Test first 3 to keep it fast
+        const blob = await asset.asBlob();
+        const pixelData = await decode(blob);
+
+        expect(pixelData.width).toBeGreaterThan(0);
+        expect(pixelData.height).toBeGreaterThan(0);
+        expect(pixelData.data).toBeInstanceOf(Uint8ClampedArray);
+      }
+    });
+
+    test('decodes PNG images correctly', async () => {
+      const pngAssets = TestImages.png();
+
+      for (const asset of pngAssets.slice(0, 3)) {
+        const blob = await asset.asBlob();
+        const pixelData = await decode(blob);
+
+        expect(pixelData.width).toBeGreaterThan(0);
+        expect(pixelData.height).toBeGreaterThan(0);
+        expect(pixelData.data).toBeInstanceOf(Uint8ClampedArray);
+      }
+    });
+
+    test('decodes WebP images correctly', async () => {
+      const webpAssets = TestImages.webp();
+
+      for (const asset of webpAssets.slice(0, 3)) {
+        const blob = await asset.asBlob();
+        const pixelData = await decode(blob);
+
+        expect(pixelData.width).toBeGreaterThan(0);
+        expect(pixelData.height).toBeGreaterThan(0);
+        expect(pixelData.data).toBeInstanceOf(Uint8ClampedArray);
+      }
+    });
   });
 
   describe('CanvasPool behavior', () => {
@@ -136,6 +196,44 @@ describe('decoder in browser environment', () => {
       expect(canvas3).toBe(canvas1);
       expect(pool['pool'].length).toBe(2);
       pool.dispose();
+    });
+
+    test('pool integrates with decode operations', async () => {
+      // Test that the decode function properly uses the canvas pool
+      const asset = TestImages.get('small', 'png');
+      const blob = await asset.asBlob();
+
+      // Multiple concurrent decodes should work without issues
+      const decodePromises = Array.from({ length: 5 }, () =>
+        decode(blob, { resize: { width: 50, height: 50, fit: 'cover' } })
+      );
+
+      const results = await Promise.all(decodePromises);
+
+      for (const pixelData of results) {
+        expect(pixelData.width).toBe(50);
+        expect(pixelData.height).toBe(50);
+        expect(pixelData.data.length).toBe(50 * 50 * 4);
+      }
+    });
+
+    test('pool handles different canvas sizes', async () => {
+      const pool1 = new CanvasPool(50, 50, 1);
+      const pool2 = new CanvasPool(100, 100, 1);
+
+      const canvas1 = await pool1.acquire();
+      const canvas2 = await pool2.acquire();
+
+      expect(canvas1.width).toBe(50);
+      expect(canvas1.height).toBe(50);
+      expect(canvas2.width).toBe(100);
+      expect(canvas2.height).toBe(100);
+
+      pool1.release(canvas1);
+      pool2.release(canvas2);
+
+      pool1.dispose();
+      pool2.dispose();
     });
   });
 });

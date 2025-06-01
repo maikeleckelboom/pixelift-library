@@ -4,7 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2a78ba49-76cf-4b9f-8241-3a8372f62658" name="Changes" comment="" />
+    <list default="true" id="2a78ba49-76cf-4b9f-8241-3a8372f62658" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/fixtures/images/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/test/fixtures/images/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/fixtures/images/sanity.test.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/workspace/browser/decode.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/test/workspace/browser/decode.test.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/workspace/browser/index.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/test/workspace/browser/index.test.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/workspace/node/index.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/test/workspace/node/index.test.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vitest.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/vitest.config.ts" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -33,7 +41,7 @@
     "git-widget-placeholder": "dev",
     "javascript.nodejs.core.library.configured.version": "24.0.2",
     "javascript.nodejs.core.library.typings.version": "22.15.29",
-    "last_opened_file_path": "//wsl.localhost/Ubuntu/home/www/npm/pixelift-library/test/fixtures/images",
+    "last_opened_file_path": "//wsl.localhost/Ubuntu/home/www/npm/pixelift-library/test/workspace/node",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -48,11 +56,11 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="\\wsl.localhost\Ubuntu\home\www\npm\pixelift-library\test\workspace\node" />
       <recent name="\\wsl.localhost\Ubuntu\home\www\npm\pixelift-library\test\fixtures\images" />
       <recent name="\\wsl.localhost\Ubuntu\home\www\npm\pixelift-library\test\fixtures\images\1024" />
       <recent name="\\wsl.localhost\Ubuntu\home\www\npm\pixelift-library" />
       <recent name="\\wsl.localhost\Ubuntu\home\www\npm\pixelift-library\src\browser\utils" />
-      <recent name="\\wsl.localhost\Ubuntu\home\www\npm\pixelift-library\test\workspace\browser" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="\\wsl.localhost\Ubuntu\home\www\npm\pixelift-library\test\fixtures\images\small\animated" />

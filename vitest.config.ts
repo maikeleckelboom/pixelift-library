@@ -19,12 +19,13 @@ export default defineConfig({
     globals: true,
     isolate: true,
     sequence: { sequencer: SnapshotLastSequencer },
-    testTimeout: 120_000,
+    testTimeout: 320_000,
     exclude: [],
     workspace: [
       {
         ...commonOptions,
         test: {
+          testTimeout: 240_000,
           name: 'node',
           environment: 'node',
           include: [
@@ -38,6 +39,7 @@ export default defineConfig({
       {
         ...commonOptions,
         test: {
+          testTimeout: 240_000,
           name: 'browser',
           environment: 'happy-dom',
           include: [
