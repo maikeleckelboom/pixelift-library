@@ -1,5 +1,6 @@
-export type TestImageFormat = 'jpeg' | 'jpg' | 'png' | 'gif' | 'webp';
+import { isBrowser } from '@/shared';
 
+export type TestImageFormat = 'jpeg' | 'jpg' | 'png' | 'gif' | 'webp';
 export type TestImageLoader = () => Promise<Response>;
 
 export interface TestImageGroups {
@@ -8,18 +9,39 @@ export interface TestImageGroups {
   large: Record<TestImageFormat, TestImageLoader>;
 }
 
-const createImageRecord = (size: string): Record<TestImageFormat, TestImageLoader> => {
-  const formats: { key: TestImageFormat; ext: string; name: string }[] = [
-    { key: 'jpeg', ext: 'jpeg', name: 'pixelift' },
-    { key: 'jpg', ext: 'jpg', name: 'pixelift' },
-    { key: 'png', ext: 'png', name: 'pixelift' },
-    { key: 'gif', ext: 'gif', name: 'pixelift' },
-    { key: 'webp', ext: 'webp', name: 'pixelift' }
-  ];
+// List all formats and the base filename (pixelift).
+const formats: { key: TestImageFormat; ext: string; name: string }[] = [
+  { key: 'jpeg', ext: 'jpeg', name: 'pixelift' },
+  { key: 'jpg', ext: 'jpg', name: 'pixelift' },
+  { key: 'png', ext: 'png', name: 'pixelift' },
+  { key: 'gif', ext: 'gif', name: 'pixelift' },
+  { key: 'webp', ext: 'webp', name: 'pixelift' }
+];
 
+/**
+ * From within fixtures/images/index.ts, we want to point at:
+ *   └─ fixtures/images/{size}/{name}.{ext}
+ *
+ * In Node:   new URL(`./${size}/${name}.${ext}`, import.meta.url)  → file://…/fixtures/images/…
+ * In Browser: new URL(`./${size}/${name}.${ext}`, import.meta.url)  → http://…/assets/… (bundler rewrites it)
+ */
+const createImageRecord = (size: string): Record<TestImageFormat, TestImageLoader> => {
   return formats.reduce(
     (record, { key, ext, name }) => {
-      record[key] = () => fetch(new URL(`./${size}/${name}.${ext}`, import.meta.url));
+      // Relative path from this file (fixtures/images/index.ts) to e.g. fixtures/images/small/pixelift.png
+      const relativePath = `./${size}/${name}.${ext}`;
+
+      let urlString: string;
+      if (isBrowser()) {
+        // Let the bundler (Vite/webpack) rewrite new URL(...) into the correct served HTTP path.
+        urlString = new URL(relativePath, import.meta.url).href;
+      } else {
+        // In Node ≥ v18, global fetch can load file:// URLs directly
+        urlString = new URL(relativePath, import.meta.url).href;
+        // That href will look like: file:///…/fixtures/images/small/pixelift.png
+      }
+
+      record[key] = () => fetch(urlString);
       return record;
     },
     {} as Record<TestImageFormat, TestImageLoader>
@@ -40,25 +62,11 @@ export interface TestCase {
 
 export function getTestCases(): TestCase[] {
   return (Object.keys(testImageGroups) as (keyof TestImageGroups)[]).flatMap((size) => {
-    const formatLoaders = testImageGroups[size] as Record<
-      TestImageFormat,
-      TestImageLoader | undefined
-    >;
-    return Object.entries(formatLoaders)
-      .filter(([, loader]) => loader)
-      .map(([format, loader]) => ({
-        size,
-        format: format as TestImageFormat,
-        loader: loader as TestImageLoader
-      }));
+    const formatLoaders = testImageGroups[size];
+    return (Object.entries(formatLoaders) as [TestImageFormat, TestImageLoader][]).map(
+      ([format, loader]) => ({ size, format, loader })
+    );
   });
-}
-
-export interface TestImageLoaders {
-  response: () => Promise<Response>;
-  blob: () => Promise<Blob>;
-  arrayBuffer: () => Promise<ArrayBuffer>;
-  stream: () => Promise<ReadableStream<Uint8Array> | null>;
 }
 
 export async function loadBlob(loader: TestImageLoader): Promise<Blob> {
@@ -66,18 +74,9 @@ export async function loadBlob(loader: TestImageLoader): Promise<Blob> {
   return response.blob();
 }
 
-export async function loadArrayBuffer(loader: TestImageLoader): Promise<ArrayBuffer> {
+export async function loadArrayBuffer(
+  loader: TestImageLoader
+): Promise<ArrayBuffer | Buffer> {
   const response = await loader();
   return response.arrayBuffer();
-}
-
-export async function loadStream(
-  loader: TestImageLoader
-): Promise<ReadableStream<Uint8Array> | null> {
-  const response = await loader();
-  return response.body;
-}
-
-export async function loadResponse(loader: TestImageLoader): Promise<Response> {
-  return await loader();
 }
