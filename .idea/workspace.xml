@@ -5,34 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2a78ba49-76cf-4b9f-8241-3a8372f62658" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/PERFORMANCE.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/fixtures/images/benchmarks/2025-06-01/Concurrency Performance.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/fixtures/images/benchmarks/2025-06-01/Core Decode Operations.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/fixtures/images/benchmarks/2025-06-01/Performance Regression Detection.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/fixtures/images/benchmarks/2025-06-01/Resize Operations.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/fixtures/images/benchmarks/2025-06-01/Scalability Analysis.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/fixtures/images/benchmarks/2025-06-01/Stress &amp; Edge Casses.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/workspace/browser/benchmarks/decode.bench.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/workspace/browser/canvas-pool.test.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/workspace/node/benchmarks/decode.bench.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/playwright.config.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/browser/decoders/canvas/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/browser/decoders/canvas/index.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/browser/decoders/canvas/pool/canvas-pool.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/browser/decoders/canvas/pool/canvas-pool.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/fixtures/images/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/test/fixtures/images/index.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/fixtures/images/large/animated/pixelift.gif" beforeDir="false" afterPath="$PROJECT_DIR$/test/fixtures/images/large/animated/pixelift.gif" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/fixtures/images/large/animated/pixelift.webp" beforeDir="false" afterPath="$PROJECT_DIR$/test/fixtures/images/large/animated/pixelift.webp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/fixtures/images/large/pixelift.gif" beforeDir="false" afterPath="$PROJECT_DIR$/test/fixtures/images/large/pixelift.gif" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/fixtures/images/large/pixelift.jpeg" beforeDir="false" afterPath="$PROJECT_DIR$/test/fixtures/images/large/pixelift.jpeg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/fixtures/images/large/pixelift.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/test/fixtures/images/large/pixelift.jpg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/fixtures/images/large/pixelift.png" beforeDir="false" afterPath="$PROJECT_DIR$/test/fixtures/images/large/pixelift.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/fixtures/images/large/pixelift.webp" beforeDir="false" afterPath="$PROJECT_DIR$/test/fixtures/images/large/pixelift.webp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/workspace/browser/decode.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/test/workspace/browser/decode.test.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/workspace/browser/index.test.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/workspace/shared/calculate-resize-rect.test.ts" beforeDir="false" afterPath="$PROJECT_DIR$/test/workspace/shared/calculate-resize-rect.test.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/workspace/shared/fixtures.test.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/vitest.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/vitest.config.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
