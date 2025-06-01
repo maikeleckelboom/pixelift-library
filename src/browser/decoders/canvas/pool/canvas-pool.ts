@@ -1,4 +1,3 @@
-import { createAbortablePromise } from '@/shared/abort';
 import { BrowserPoolError, BrowserPoolErrors } from '@/browser/decoders/canvas/pool/errors';
 import type { Pool, Task } from '@/browser/decoders/canvas/pool/types';
 
@@ -13,6 +12,7 @@ export class CanvasPool implements Pool {
   private allocatedCanvases = new Set<OffscreenCanvas>();
   private queuedTasksHead: TaskNode | null = null;
   private queuedTasksTail: TaskNode | null = null;
+  private maxQueue = 100;
 
   constructor(
     private readonly width: number,
@@ -28,7 +28,6 @@ export class CanvasPool implements Pool {
   }
 
   acquire(signal?: AbortSignal): Promise<OffscreenCanvas> {
-    // If the caller's signal is already aborted, reject immediately.
     if (signal?.aborted) {
       return Promise.reject(BrowserPoolErrors.OPERATION_ABORTED);
     }
@@ -49,36 +48,48 @@ export class CanvasPool implements Pool {
     }
 
     // Otherwise, the pool is "full" → enqueue this request.
-    return createAbortablePromise(
-      new Promise<OffscreenCanvas>((resolve, reject) => {
-        const onAbort = () => {
+    return new Promise<OffscreenCanvas>((resolve, reject) => {
+      const onAbort = () => {
+        this.removeNode(node);
+        reject(BrowserPoolErrors.OPERATION_ABORTED);
+      };
+
+      const node: TaskNode = {
+        task: { resolve, reject, signal },
+        next: null,
+        cleanup: () => signal?.removeEventListener('abort', onAbort)
+      };
+
+      this.enqueueNode(node);
+
+      if (signal) {
+        if (signal.aborted) {
+          // Handle immediate abort after enqueue
           this.removeNode(node);
           reject(BrowserPoolErrors.OPERATION_ABORTED);
-        };
-
-        const node: TaskNode = {
-          task: { resolve, reject, signal },
-          next: null,
-          cleanup: () => signal?.removeEventListener('abort', onAbort)
-        };
-
-        this.enqueueNode(node);
-        signal?.addEventListener('abort', onAbort, { once: true });
-      }),
-      signal
-    );
+        } else {
+          signal.addEventListener('abort', onAbort, { once: true });
+        }
+      }
+    });
   }
 
   release(canvas: OffscreenCanvas): void {
-    // Verify that this canvas was actually checked out.
     if (!this.allocatedCanvases.has(canvas)) {
       throw new BrowserPoolError.ModuleError('RELEASE_UNACQUIRED');
     }
 
-    // Mark it as free first.
+    if (canvas.width !== this.width || canvas.height !== this.height) {
+      this.pool = this.pool.filter((c) => c !== canvas);
+      this.allocatedCanvases.delete(canvas);
+
+      const newCanvas = new OffscreenCanvas(this.width, this.height);
+      this.pool.push(newCanvas);
+      canvas = newCanvas;
+    }
+
     this.allocatedCanvases.delete(canvas);
 
-    // If there is a queued task waiting, give them this canvas.
     while (this.queuedTasksHead) {
       const node = this.queuedTasksHead;
       this.dequeueHead();
@@ -89,7 +100,6 @@ export class CanvasPool implements Pool {
         continue;
       }
 
-      // Otherwise, re-use the just-released canvas.
       this.allocatedCanvases.add(canvas);
       node.task.resolve(canvas);
       return;
@@ -113,6 +123,11 @@ export class CanvasPool implements Pool {
   }
 
   private enqueueNode(node: TaskNode): void {
+    // if (this.queueSize >= this.maxQueue) {
+    //   node.cleanup();
+    //   node.task.reject(BrowserPoolErrors.QUEUE_FULL);
+    //   return;
+    // }
     if (this.queuedTasksTail) {
       this.queuedTasksTail.next = node;
       this.queuedTasksTail = node;
@@ -131,7 +146,7 @@ export class CanvasPool implements Pool {
   }
 
   private removeNode(target: TaskNode): void {
-    target.cleanup(); // ✅ Prevent listener leak
+    target.cleanup();
 
     if (!this.queuedTasksHead) return;
 
