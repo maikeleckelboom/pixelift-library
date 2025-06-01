@@ -20,3 +20,5 @@
 # 6) Finally ignore any stray local or CI files
 node_modules/
 .env*
+
+apps/

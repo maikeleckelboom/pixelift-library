@@ -70,7 +70,7 @@ export class CanvasPool implements Pool {
         cleanup: () => signal?.removeEventListener('abort', onAbort)
       };
 
-      if (this.getCurrentQueueSize() >= this.queueMaxSize) {
+      if (this.currentQueueSizeInternal >= this.queueMaxSize) {
         node.cleanup();
         reject(new BrowserPoolError.ModuleError('QUEUE_FULL'));
         return;
@@ -91,34 +91,35 @@ export class CanvasPool implements Pool {
       throw new BrowserPoolError.ModuleError('RELEASE_UNACQUIRED');
     }
 
+    let canvasToUseForNextTask = canvas;
+
     if (canvas.width !== this.width || canvas.height !== this.height) {
-      this.destroyCanvasResources(canvas); // CRITICAL: Prevent leaks
+      this.destroyCanvasResources(canvas);
       this.pool = this.pool.filter((c) => c !== canvas);
-      this.allocatedCanvases.delete(canvas);
 
       try {
         const newCanvas = new OffscreenCanvas(this.width, this.height);
         this.pool.push(newCanvas);
-        canvas = newCanvas;
+        canvasToUseForNextTask = newCanvas;
       } catch (error) {
+        this.allocatedCanvases.delete(canvas);
         throw new BrowserPoolError.ModuleError('RECREATION_FAILURE', { cause: error });
       }
     }
 
     this.allocatedCanvases.delete(canvas);
 
-    while (this.queuedTasksHead) {
+    if (this.queuedTasksHead) {
       const node = this.queuedTasksHead;
       this.dequeueHead();
       node.cleanup();
 
       if (node.task.signal?.aborted) {
         node.task.reject(BrowserPoolErrors.OPERATION_ABORTED);
-        continue;
+      } else {
+        this.allocatedCanvases.add(canvasToUseForNextTask);
+        node.task.resolve(canvasToUseForNextTask);
       }
-
-      this.allocatedCanvases.add(canvas);
-      node.task.resolve(canvas);
       return;
     }
   }
@@ -131,6 +132,7 @@ export class CanvasPool implements Pool {
     let currentNode = this.queuedTasksHead;
     this.queuedTasksHead = null;
     this.queuedTasksTail = null;
+    this.currentQueueSizeInternal = 0;
 
     while (currentNode) {
       const nextNode = currentNode.next;
@@ -138,16 +140,6 @@ export class CanvasPool implements Pool {
       currentNode.task.reject(new BrowserPoolError.ModuleError('POOL_DISPOSED'));
       currentNode = nextNode;
     }
-  }
-
-  private getCurrentQueueSize(): number {
-    let count = 0;
-    let node = this.queuedTasksHead;
-    while (node) {
-      count++;
-      node = node.next;
-    }
-    return count;
   }
 
   private enqueueNode(node: TaskNode): void {
@@ -158,14 +150,17 @@ export class CanvasPool implements Pool {
       this.queuedTasksHead = node;
       this.queuedTasksTail = node;
     }
+    this.currentQueueSizeInternal++;
   }
 
   private dequeueHead(): void {
     if (!this.queuedTasksHead) return;
+
     this.queuedTasksHead = this.queuedTasksHead.next;
     if (!this.queuedTasksHead) {
       this.queuedTasksTail = null;
     }
+    this.currentQueueSizeInternal--;
   }
 
   private removeNode(target: TaskNode): void {
@@ -173,32 +168,43 @@ export class CanvasPool implements Pool {
 
     if (!this.queuedTasksHead) return;
 
+    let unlinked = false;
     if (this.queuedTasksHead === target) {
-      this.dequeueHead();
-      return;
-    }
-
-    let prev = this.queuedTasksHead;
-    while (prev.next && prev.next !== target) {
-      prev = prev.next;
-    }
-
-    if (prev.next === target) {
-      prev.next = target.next;
-      if (target === this.queuedTasksTail) {
-        this.queuedTasksTail = prev;
+      this.queuedTasksHead = this.queuedTasksHead.next;
+      if (!this.queuedTasksHead) {
+        this.queuedTasksTail = null;
       }
+      unlinked = true;
+    } else {
+      let prev = this.queuedTasksHead;
+      while (prev.next && prev.next !== target) {
+        prev = prev.next;
+      }
+
+      if (prev.next === target) {
+        prev.next = target.next;
+        if (target === this.queuedTasksTail) {
+          this.queuedTasksTail = prev;
+        }
+        unlinked = true;
+      }
+    }
+
+    if (unlinked) {
+      this.currentQueueSizeInternal--;
     }
   }
 
   private destroyCanvasResources(canvas: OffscreenCanvas): void {
     try {
-      // Most effective cross-browser cleanup
       const ctx = canvas.getContext('2d');
-      if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
-      // Resetting canvas size helps GC
+      if (ctx) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
       canvas.width = 1;
       canvas.height = 1;
-    } catch {}
+    } catch {
+      // Optionally, log this error but do not throw.
+    }
   }
 }
