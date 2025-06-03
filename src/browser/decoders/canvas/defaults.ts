@@ -1,5 +1,5 @@
 export const IMAGE_BITMAP_OPTIONS: ImageBitmapOptions = {
-  imageOrientation: 'none',
+  imageOrientation: 'from-image',
   premultiplyAlpha: 'none'
 } as const;
 

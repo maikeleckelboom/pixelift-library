@@ -41,28 +41,11 @@ export function sanitizeSVGElement(
   return html;
 }
 
-export async function loadSVGSerializerWithDOMPurify(): Promise<
-  (input: SVGElement) => string
-> {
-  try {
-    const mod = await import('dompurify');
-    const DOMPurify: { sanitize: DOMPurifySanitize } = mod.default || mod;
-
-    return (input: SVGElement) =>
-      sanitizeSVGElement(input, {
-        sanitize: DOMPurify.sanitize,
-        skipSanitization: false
-      });
-  } catch (err) {
-    console.warn(
-      '[Pixelift] DOMPurify not found. Falling back to unsanitized SVG output. ' +
-        'To enable sanitization, install "dompurify" and try again.',
-      err instanceof Error ? err.message : String(err)
-    );
-
-    return (input: SVGElement) =>
-      sanitizeSVGElement(input, {
-        skipSanitization: true
-      });
-  }
+export async function svgToBufferSource(
+  input: SVGElement,
+  options: SVGSerializerOptions = {}
+): Promise<ArrayBuffer> {
+  const sanitizedSVG = sanitizeSVGElement(input, options);
+  const blob = new Blob([sanitizedSVG], { type: 'image/svg+xml' });
+  return await blob.arrayBuffer();
 }

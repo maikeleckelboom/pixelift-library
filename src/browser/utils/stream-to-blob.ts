@@ -1,24 +1,24 @@
-export interface StreamToBlobOptions {
-  type?: string;
-  onProgress?: ((bytesLoaded: number) => void) | undefined;
-  signal?: AbortSignal | undefined;
+export interface StreamOptions {
+  onProgress?: (loadedBytes: number) => void;
   chunkSize?: number;
   yieldEvery?: number;
   maxBytes?: number;
+  mimeType?: string;
+  signal?: AbortSignal;
 }
 
 export async function streamToBlob(
   stream: ReadableStream<Uint8Array>,
-  options: StreamToBlobOptions = {}
+  options?: StreamOptions
 ): Promise<Blob> {
   const {
-    type,
+    mimeType,
     onProgress,
     signal,
     chunkSize: inputChunkSize = 64 * 1024,
     yieldEvery: inputYieldEvery = 50,
     maxBytes = Infinity
-  } = options;
+  } = options ?? {};
 
   const chunkSize = Math.max(1, inputChunkSize);
   const yieldEvery = Math.max(1, inputYieldEvery);
@@ -102,5 +102,5 @@ export async function streamToBlob(
     reader.releaseLock();
   }
 
-  return new Blob(blobParts, { type: type ?? 'application/octet-stream' });
+  return new Blob(blobParts, { type: mimeType ?? 'application/octet-stream' });
 }

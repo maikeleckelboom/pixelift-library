@@ -74,9 +74,11 @@
   "devDependencies": {
     "@playwright/test": "^1.52.0",
     "@types/node": "^22.15.24",
+    "@types/web": "^0.0.237",
     "@typescript-eslint/eslint-plugin": "^8.32.1",
     "@typescript-eslint/parser": "^8.32.1",
     "@vitest/browser": "^3.1.4",
+    "dompurify": "^3.2.6",
     "eslint": "^9.27.0",
     "eslint-config-prettier": "^10.1.5",
     "happy-dom": "^17.4.7",
@@ -86,14 +88,13 @@
     "tsup": "^8.5.0",
     "typescript-eslint": "^8.32.1",
     "vite-tsconfig-paths": "^5.1.4",
-    "vitest": "^3.1.4",
-    "dompurify": "^3.2.6"
+    "vitest": "^3.1.4"
   },
   "peerDependencies": {
     "typescript": "^5"
   },
   "optionalDependencies": {
-    "sharp": "^0.34.1",
-    "dompurify": "^3.2.6"
+    "dompurify": "^3.2.6",
+    "sharp": "^0.34.1"
   }
 }

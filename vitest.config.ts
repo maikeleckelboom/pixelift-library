@@ -21,19 +21,16 @@ export default defineConfig({
     sequence: { sequencer: SnapshotLastSequencer },
     testTimeout: 0,
     exclude: [],
-    workspace: [
+    projects: [
       // Node project
       {
         ...commonOptions,
         test: {
           name: 'node',
           environment: 'node',
-          include: [
-            'test/workspace/node/**/*.test.ts',
-            'test/workspace/shared/**/*.test.ts'
-          ],
+          include: ['test/projects/node/**/*.test.ts', 'test/projects/shared/**/*.test.ts'],
           benchmark: {
-            include: ['test/workspace/node/**/*.bench.ts']
+            include: ['test/projects/node/**/*.bench.ts']
           }
         }
       },
@@ -45,11 +42,11 @@ export default defineConfig({
           name: 'browser',
           environment: 'happy-dom',
           include: [
-            'test/workspace/browser/**/*.test.ts',
-            'test/workspace/shared/**/*.test.ts'
+            'test/projects/browser/**/*.test.ts',
+            'test/projects/shared/**/*.test.ts'
           ],
           benchmark: {
-            include: ['test/workspace/browser/**/*.bench.ts']
+            include: ['test/projects/browser/**/*.bench.ts']
           },
           browser: {
             provider: 'playwright',

@@ -1,25 +1,38 @@
-import type { CommonOptions } from '@/types';
+import type { PixeliftOptions } from '@/types';
+import type { FitMode, ResizeOptions } from '@/browser/types.ts';
 
-export function validateResizeOptions(options?: CommonOptions): CommonOptions['resize'] {
+const VALID_FIT_MODES = new Set<FitMode>(['cover', 'contain', 'fill', 'inside', 'outside']);
+
+/**
+ * Validates and returns normalized ResizeOptions if present and valid.
+ * Throws a descriptive error on invalid input.
+ */
+export function validateResizeOptions(
+  options?: PixeliftOptions
+): ResizeOptions | undefined {
   const resize = options?.resize;
+
   if (!resize) return undefined;
 
   const { width, height, fit } = resize;
 
-  const isWidthValid = width == null || (Number.isFinite(width) && width > 0);
-  const isHeightValid = height == null || (Number.isFinite(height) && height > 0);
-
-  if (!isWidthValid || !isHeightValid) {
-    throw new Error('Resize dimensions must be positive numbers or undefined');
+  if (width !== undefined && (!Number.isFinite(width) || width <= 0)) {
+    throw new TypeError(
+      `Invalid resize width: expected a positive finite number, received ${typeof width} "${width}"`
+    );
   }
 
-  if (fit && !['cover', 'contain', 'fill', 'inside', 'outside'].includes(fit)) {
-    throw new Error(`Invalid fit mode: ${fit}`);
+  if (height !== undefined && (!Number.isFinite(height) || height <= 0)) {
+    throw new TypeError(
+      `Invalid resize height: expected a positive finite number, received ${typeof height} "${height}"`
+    );
   }
 
-  return {
-    ...(width != null && { width }),
-    ...(height != null && { height }),
-    fit
-  };
+  if (fit !== undefined && !VALID_FIT_MODES.has(fit)) {
+    throw new RangeError(
+      `Invalid fit mode "${fit}". Valid options are: ${Array.from(VALID_FIT_MODES).join(', ')}`
+    );
+  }
+
+  return { ...resize };
 }

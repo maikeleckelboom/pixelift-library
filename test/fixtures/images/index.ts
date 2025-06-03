@@ -1,4 +1,6 @@
-export type ImageFormat = 'jpeg' | 'jpg' | 'png' | 'gif' | 'webp';
+const imageFormats = ['jpeg', 'jpg', 'png', 'gif', 'webp'] as const;
+
+export type ImageFormat = (typeof imageFormats)[number];
 export type ImageSize = 'small' | 'medium' | 'large';
 
 export interface ImageAsset {
@@ -19,17 +21,17 @@ export interface ImageAsset {
 }
 
 const ASSETS = [
-  ...['jpeg', 'jpg', 'png', 'gif', 'webp'].map((format) => ({
+  ...imageFormats.map((format) => ({
     size: 'small' as ImageSize,
     format: format as ImageFormat,
     name: 'pixelift'
   })),
-  ...['jpeg', 'jpg', 'png', 'gif', 'webp'].map((format) => ({
+  ...imageFormats.map((format) => ({
     size: 'medium' as ImageSize,
     format: format as ImageFormat,
     name: 'pixelift'
   })),
-  ...['jpeg', 'jpg', 'png', 'gif', 'webp'].map((format) => ({
+  ...imageFormats.map((format) => ({
     size: 'large' as ImageSize,
     format: format as ImageFormat,
     name: 'pixelift'
@@ -159,6 +161,7 @@ export const TestImages = {
   png: () => TestImageRegistry.getByFormat('png'),
   gif: () => TestImageRegistry.getByFormat('gif'),
   webp: () => TestImageRegistry.getByFormat('webp'),
+  jpg: () => TestImageRegistry.getByFormat('jpg'),
   get: (size: ImageSize, format: ImageFormat) => TestImageRegistry.get(size, format),
   oneOfEach: () => [
     TestImageRegistry.get('small', 'jpeg'),

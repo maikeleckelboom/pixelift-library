@@ -1,18 +1,25 @@
-import type { CommonOptions } from '@/types';
-import type { SupportedFormat } from '@/shared/formats.ts';
-import type { Pool } from '@/browser/decoders/canvas/pool/types.ts';
+export type ImageBufferSource = BufferSource | ReadableStream<Uint8Array>;
 
-export type BrowserInput =
-  | ImageBitmapSource
-  | Uint8Array
-  | BufferSource
-  | Response
-  | SVGElement
-  | ReadableStream<Uint8Array>
-  | null;
+export type BrowserInput = ImageBitmapSource | ImageBufferSource | SVGElement | Response;
 
-export interface BrowserOptions extends CommonOptions {
-  formatHint?: SupportedFormat;
+export interface ImageDecodeOptions {
+  completeFramesOnly?: boolean;
+  frameIndex?: number;
+}
+
+export type FitMode = 'cover' | 'contain' | 'fill' | 'inside' | 'outside';
+
+export interface ResizeOptions {
+  width?: number;
+  height?: number;
+  fit?: FitMode;
+}
+
+export type MimeType = `${string}/${string}`;
+
+export interface BrowserOptions extends ImageDecodeOptions {
+  mimeType?: MimeType;
+  signal?: AbortSignal;
+  resize?: ResizeOptions;
   quality?: ImageSmoothingQuality;
-  pool?: Pool;
 }

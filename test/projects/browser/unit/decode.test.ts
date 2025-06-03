@@ -120,7 +120,6 @@ describe('decoder in browser environment', () => {
       const jpegAssets = TestImages.jpeg();
 
       for (const asset of jpegAssets.slice(0, 3)) {
-        // Test first 3 to keep it fast
         const blob = await asset.asBlob();
         const pixelData = await decode(blob);
 
@@ -147,6 +146,19 @@ describe('decoder in browser environment', () => {
       const webpAssets = TestImages.webp();
 
       for (const asset of webpAssets.slice(0, 3)) {
+        const blob = await asset.asBlob();
+        const pixelData = await decode(blob);
+
+        expect(pixelData.width).toBeGreaterThan(0);
+        expect(pixelData.height).toBeGreaterThan(0);
+        expect(pixelData.data).toBeInstanceOf(Uint8ClampedArray);
+      }
+    });
+
+    test('decodes GIF images correctly', async () => {
+      const gifAssets = TestImages.gif();
+
+      for (const asset of gifAssets.slice(0, 3)) {
         const blob = await asset.asBlob();
         const pixelData = await decode(blob);
 

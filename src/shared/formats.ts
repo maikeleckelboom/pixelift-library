@@ -1,3 +1,4 @@
+/*
 const FORMAT_REGISTRY = {
   jpeg: { mime: 'image/jpeg' },
   jpg: { mime: 'image/jpeg' },
@@ -10,19 +11,20 @@ const FORMAT_REGISTRY = {
   svg: { mime: 'image/svg+xml' },
   tiff: { mime: 'image/tiff' },
   heif: { mime: 'image/heic' },
+  heic: { mime: 'image/heic' },
+  'heif-sequence': { mime: 'image/heic-sequence' },
+  'heic-sequence': { mime: 'image/heic-sequence' },
   jp2: { mime: 'image/jp2' },
-  pdf: { mime: 'application/pdf' },
-  raw: { mime: 'application/octet-stream' }
+  jxl: { mime: 'image/jxl' }
 } as const;
 
 const ENVIRONMENT_SUPPORT = {
   canvas: ['jpeg', 'jpg', 'png', 'webp', 'gif', 'bmp', 'avif', 'ico', 'svg'],
   webcodecs: ['jpeg', 'jpg', 'png', 'webp', 'gif', 'avif', 'bmp', 'ico'],
-  node: ['jpeg', 'jpg', 'png', 'webp', 'gif', 'tiff', 'heif', 'jp2', 'pdf', 'raw', 'svg'],
-  crossEnv: ['jpeg', 'jpg', 'png', 'webp', 'gif', 'svg']
+  node: ['jpeg', 'jpg', 'png', 'webp', 'gif', 'tiff', 'heif', 'heic', 'jp2', 'pdf', 'svg']
 } as const;
 
-export const CANVAS_SUPPORTED_FORMATS = ENVIRONMENT_SUPPORT.canvas;
+// export const CANVAS_SUPPORTED_FORMATS = ENVIRONMENT_SUPPORT.canvas;
 export const WEBCODECS_SUPPORTED_FORMATS = ENVIRONMENT_SUPPORT.webcodecs;
 export const NODE_SUPPORTED_FORMATS = ENVIRONMENT_SUPPORT.node;
 export const BROWSER_SUPPORTED_FORMATS = [
@@ -32,33 +34,16 @@ export const BROWSER_SUPPORTED_FORMATS = [
 export type BrowserFormat = (typeof BROWSER_SUPPORTED_FORMATS)[number];
 export type NodeFormat = (typeof NODE_SUPPORTED_FORMATS)[number];
 export type WebCodecsFormat = (typeof WEBCODECS_SUPPORTED_FORMATS)[number];
-export type SupportedFormat = BrowserFormat | NodeFormat;
-
-export function validateBrowserFormat(format: string): format is BrowserFormat {
-  return BROWSER_SUPPORTED_FORMATS.includes(format as BrowserFormat);
-}
-
-export function validateNodeFormat(format: string): format is NodeFormat {
-  return NODE_SUPPORTED_FORMATS.includes(format as NodeFormat);
-}
-
-export function validateWebCodecsFormat(format: string): format is WebCodecsFormat {
-  return WEBCODECS_SUPPORTED_FORMATS.includes(format as WebCodecsFormat);
-}
+export type FormatHint = BrowserFormat | NodeFormat | WebCodecsFormat;
 
 export type FormatRegistry = typeof FORMAT_REGISTRY;
 
-type MimeTypeOf<T extends keyof FormatRegistry> = FormatRegistry[T]['mime'];
-
-export type BrowserMimeType = MimeTypeOf<BrowserFormat>;
-export type NodeMimeType = MimeTypeOf<NodeFormat>;
-export type WebCodecsMimeType = MimeTypeOf<WebCodecsFormat>;
-
-export function getMimeTypeForFormat(
-  format: BrowserFormat | NodeFormat | (string & {})
-): string {
-  if (format in FORMAT_REGISTRY) {
-    return FORMAT_REGISTRY[format as keyof FormatRegistry].mime;
+export function getMimeTypeFromFormatHint<T extends keyof FormatRegistry>(
+  format: T | undefined
+): FormatRegistry[T]['mime'] {
+  if (format && format in FORMAT_REGISTRY) {
+    return FORMAT_REGISTRY[format].mime;
   }
   throw new TypeError(`Unsupported format: ${format}`);
 }
+*/

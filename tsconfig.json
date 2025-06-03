@@ -2,11 +2,21 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
-      "@test/*": ["test/*"],
-      "@apps/*": ["apps/*"]
+      "@/*": [
+        "src/*"
+      ],
+      "@test/*": [
+        "test/*"
+      ],
+      "@apps/*": [
+        "apps/*"
+      ]
     },
-    "lib": ["ESNext", "DOM", "WebWorker"],
+    "lib": [
+      "ESNext",
+      "DOM",
+      "WebWorker"
+    ],
     "target": "ESNext",
     "module": "ESNext",
     "moduleDetection": "force",
@@ -30,9 +40,20 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false,
-    "types": ["@types/node", "@types/web", "@vitest/browser/matchers", "vitest/globals", "@types/dompurify"
+    "types": [
+      "@types/node",
+      "@types/web",
+      "@vitest/browser/matchers",
+      "vitest/globals",
+      "@types/dompurify"
     ]
   },
-  "exclude": ["node_modules", "dist"],
-  "include": ["src/**/*", "test/**/*"]
+  "exclude": [
+    "node_modules",
+    "dist"
+  ],
+  "include": [
+    "src/**/*",
+    "test/**/*",
+  ]
 }

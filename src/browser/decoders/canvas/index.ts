@@ -1,4 +1,3 @@
-import { CanvasPool } from '@/browser/decoders/canvas/pool/canvas-pool';
 import { normalizeToBitmapSource } from '@/browser/utils/normalize-to-bitmap-source.ts';
 import { calculateResizeRect } from '@/browser/utils/calculate-resize-rect.ts';
 import type { PixelData } from '@/types';
@@ -6,12 +5,7 @@ import type { BrowserInput, BrowserOptions } from '@/browser/types';
 import { CANVAS_DECODE_CONFIG } from '@/browser/decoders/canvas/defaults';
 import { BrowserDecodeError } from '@/browser/decoders/canvas/errors.ts';
 import { validateResizeOptions } from '@/shared/validate.ts';
-
-const canvasPool = new CanvasPool(
-  2048,
-  2048,
-  Math.min(Math.max(2, Math.floor(navigator.hardwareConcurrency * 0.5)), 6)
-);
+import { getInternalCanvasPool } from '@/browser/decoders/canvas/internal-canvas-pool.ts';
 
 /**
  * Decodes image data into raw pixel data
@@ -29,15 +23,9 @@ export async function decode(
   input: BrowserInput,
   options: BrowserOptions = {}
 ): Promise<PixelData> {
-  const opts = options ?? {};
-  const pool = opts.pool ?? canvasPool;
+  const resize = validateResizeOptions(options);
 
-  const resize = validateResizeOptions(opts);
-
-  const normalizedSource = await normalizeToBitmapSource(input, {
-    formatHint: opts.formatHint,
-    signal: opts.signal
-  });
+  const normalizedSource = await normalizeToBitmapSource(input, options);
 
   const imageBitmap = await createImageBitmap(
     normalizedSource,
@@ -47,19 +35,16 @@ export async function decode(
   const targetWidth = resize?.width ?? imageBitmap.width;
   const targetHeight = resize?.height ?? imageBitmap.height;
 
-  if (targetWidth <= 0 || targetHeight <= 0) {
-    throw new BrowserDecodeError.ModuleError('INVALID_TARGET_DIMENSIONS', {
-      context: { targetWidth, targetHeight }
-    });
-  }
+  const pool = getInternalCanvasPool();
 
-  const canvas = await pool.acquire(opts.signal);
+  const canvas = await pool.acquire(options.signal);
 
   try {
     canvas.width = targetWidth;
     canvas.height = targetHeight;
 
     const context = canvas.getContext('2d', CANVAS_DECODE_CONFIG.context2d);
+
     if (!context) {
       throw new BrowserDecodeError.ModuleError('CONTEXT_UNAVAILABLE', {
         context: { canvas }
@@ -68,16 +53,12 @@ export async function decode(
 
     context.imageSmoothingEnabled = CANVAS_DECODE_CONFIG.smoothing.imageSmoothingEnabled;
     context.imageSmoothingQuality =
-      opts.quality ?? CANVAS_DECODE_CONFIG.smoothing.imageSmoothingQuality;
+      options.quality ?? CANVAS_DECODE_CONFIG.smoothing.imageSmoothingQuality;
 
     const { sx, sy, sw, sh, dx, dy, dw, dh } = calculateResizeRect(
       imageBitmap.width,
       imageBitmap.height,
-      {
-        width: targetWidth,
-        height: targetHeight,
-        fit: resize?.fit
-      }
+      resize
     );
 
     context.drawImage(imageBitmap, sx, sy, sw, sh, dx, dy, dw, dh);
@@ -90,9 +71,7 @@ export async function decode(
       height: targetHeight
     };
   } finally {
-    if (imageBitmap) {
-      imageBitmap.close();
-    }
+    imageBitmap.close();
     pool.release(canvas);
   }
 }

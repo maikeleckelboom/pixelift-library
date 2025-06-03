@@ -1,14 +1,16 @@
 import { nodeStreamToBuffer } from '@/node/utils/node-stream-to-buffer.ts';
 import { webStreamToBuffer } from '@/node/utils/web-stream-to-buffer.ts';
-import type { NodeInput } from '@/node/decoders/sharp/types.ts';
 import type { SharpInput } from 'sharp';
 import { Readable } from 'stream';
-import type { ProgressOptions } from '@/types';
+import type { NodeInput, NodeOptions } from '@/node/types.ts';
 
 export async function normalizeNodeInput(
   input: NodeInput,
-  options?: ProgressOptions
+  options?: NodeOptions
 ): Promise<SharpInput> {
+  if (input == null) {
+    throw new TypeError('Input source cannot be null or undefined');
+  }
   if (isBlob(input)) {
     return await blobToBuffer(input);
   }

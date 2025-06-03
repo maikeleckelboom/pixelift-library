@@ -5,5 +5,5 @@ export const BrowserDecodeError = createErrorModule('Decode', {
   DECODE_FAILED: 'Image decoding failed.',
   CONTEXT_UNAVAILABLE: 'Canvas 2D context not available.',
   INVALID_TARGET_DIMENSIONS: 'Invalid target dimensions for decoding.',
-  SVG_RASTERIZATION_FAILED: 'SVG rasterization failed' // todo: impl.
+  SVG_RASTERIZATION_FAILED: 'SVG rasterization failed'
 });

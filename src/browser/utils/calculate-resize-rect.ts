@@ -14,9 +14,11 @@ export interface ResizeRect {
 export function calculateResizeRect(
   srcWidth: number,
   srcHeight: number,
-  { width, height, fit = 'cover' }: ResizeOptions
+  options?: ResizeOptions
 ): ResizeRect {
   const srcAspect = srcWidth / srcHeight;
+
+  const { width, height, fit = 'cover' } = options ?? {};
 
   let targetW = width;
   let targetH = height;

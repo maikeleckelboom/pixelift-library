@@ -1,10 +1,10 @@
-import { CanvasPool } from '@/browser/decoders/canvas/pool/canvas-pool.ts';
+import { OffscreenCanvasPool } from '@/browser/decoders/canvas/pool/offscreen-canvas-pool.ts';
 import { TestImages } from '@test/fixtures/images';
 import { decode } from '@/browser';
 
-describe('CanvasPool behavior', () => {
+describe('OffscreenCanvasPool behavior', () => {
   test('handles pool exhaustion and aborts queued tasks gracefully', async () => {
-    const pool = new CanvasPool(100, 100, 1);
+    const pool = new OffscreenCanvasPool(100, 100, 1);
 
     const acquire1 = pool.acquire();
     const acquire2 = pool.acquire();
@@ -22,7 +22,7 @@ describe('CanvasPool behavior', () => {
   });
 
   test('reuses canvases properly and grows when needed', async () => {
-    const pool = new CanvasPool(100, 100, 2);
+    const pool = new OffscreenCanvasPool(100, 100, 2);
     const canvas1 = await pool.acquire();
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const canvas2 = await pool.acquire();
@@ -54,8 +54,8 @@ describe('CanvasPool behavior', () => {
   });
 
   test('pool handles different canvas sizes', async () => {
-    const pool1 = new CanvasPool(50, 50, 1);
-    const pool2 = new CanvasPool(100, 100, 1);
+    const pool1 = new OffscreenCanvasPool(50, 50, 1);
+    const pool2 = new OffscreenCanvasPool(100, 100, 1);
 
     const canvas1 = await pool1.acquire();
     const canvas2 = await pool2.acquire();
